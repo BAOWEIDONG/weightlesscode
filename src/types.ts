@@ -11,6 +11,7 @@ export interface User {
   weight?: number;
   medicalHistory?: string;
   allergies?: string;
+  medicalReports?: string[];
 }
 
 export interface WeightRecord {

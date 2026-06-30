@@ -124,7 +124,8 @@ export const QuestionnaireView = () => {
         gender: formData.gender as 'male' | 'female',
         age: parseInt(formData.age),
         height: parseFloat(formData.height),
-        weight: parseFloat(formData.weight)
+        weight: parseFloat(formData.weight),
+        medicalReports: formData.medicalReports
       });
     }
 
