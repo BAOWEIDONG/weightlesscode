@@ -34,7 +34,7 @@ export const LoginView = () => {
       } else if (role === 'dietitian') {
         setCurrentView('dietitian-dashboard');
       } else {
-        setCurrentView('register');
+        setCurrentView('questionnaire');
       }
     } else {
       setError('请输入正确的11位手机号和6位验证码');
@@ -50,7 +50,7 @@ export const LoginView = () => {
             <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-[#07C160]">
               <MessageCircle className="h-12 w-12 text-white" />
             </div>
-            <h1 className="text-2xl font-semibold text-gray-900">新项目开营</h1>
+            <h1 className="text-2xl font-semibold text-gray-900">28天轻体减重</h1>
             <p className="text-gray-500 text-center text-sm">授权获取您的微信头像和昵称</p>
           </div>
           
@@ -81,42 +81,55 @@ export const LoginView = () => {
   }
 
   return (
-    <div className="flex h-screen flex-col bg-[#F7F8FA]">
+    <div className="flex h-screen flex-col bg-white">
       <NavBar title="绑定手机号" onBack={() => setStep(1)} />
-      <div className="p-6 space-y-6">
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">手机号码</label>
-            <Input
+      
+      <div className="flex-1 flex flex-col px-8 pt-12 pb-6">
+        <div className="mb-10">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">安全验证</h2>
+          <p className="text-sm text-gray-500">为了保障您的账号安全，请绑定您的常用手机号</p>
+        </div>
+
+        <div className="space-y-6">
+          <div className="space-y-1 relative">
+            <input
               type="tel"
               placeholder="请输入11位手机号"
+              className="w-full border-b border-gray-200 py-4 px-2 text-lg focus:border-[#07C160] focus:outline-none transition-colors bg-transparent placeholder-gray-300"
               value={phone}
               onChange={(e) => { setPhone(e.target.value); setError(''); }}
               maxLength={11}
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">验证码</label>
-            <div className="flex gap-3">
-              <Input
-                type="number"
-                placeholder="6位验证码"
-                value={code}
-                onChange={(e) => { setCode(e.target.value); setError(''); }}
-                maxLength={6}
-              />
-              <Button variant="outline" className="shrink-0 w-32" onClick={() => { setCode('123456'); setError(''); }}>
-                获取验证码
-              </Button>
-            </div>
+          
+          <div className="space-y-1 relative flex items-center border-b border-gray-200 focus-within:border-[#07C160] transition-colors">
+            <input
+              type="number"
+              placeholder="请输入6位验证码"
+              className="flex-1 py-4 px-2 text-lg focus:outline-none bg-transparent placeholder-gray-300"
+              value={code}
+              onChange={(e) => { setCode(e.target.value); setError(''); }}
+              maxLength={6}
+            />
+            <button 
+              className="text-[#07C160] font-medium text-sm px-4 whitespace-nowrap active:opacity-70 transition-opacity"
+              onClick={() => { setCode('123456'); setError(''); }}
+            >
+              获取验证码
+            </button>
           </div>
         </div>
         
-        {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+        {error && <div className="text-red-500 text-sm mt-4">{error}</div>}
         
-        <Button className="w-full" size="lg" onClick={handlePhoneSubmit}>
-          确认绑定
-        </Button>
+        <div className="mt-12">
+          <Button className="w-full h-12 text-base font-medium rounded-full shadow-lg shadow-[#07C160]/20" onClick={handlePhoneSubmit}>
+            确认绑定
+          </Button>
+          <p className="text-[10px] text-gray-400 text-center mt-6">
+            绑定即代表您同意<span className="text-gray-600">《服务协议》</span>与<span className="text-gray-600">《隐私政策》</span>
+          </p>
+        </div>
       </div>
     </div>
   );

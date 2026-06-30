@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../AppContext';
 import { NavBar, Card, Button, Input } from './ui';
-import { UserCircle, Coffee, MessageCircle } from 'lucide-react';
+import { UserCircle, Coffee, MessageCircle, Stethoscope, ClipboardList, AlertCircle, FileText } from 'lucide-react';
 import { MOCK_STUDENTS } from './CoachDashboardView';
 import { format } from 'date-fns';
+import { MOCK_MEDICAL_DATA, MedicalCategory } from './HealthProfileView';
 
 const MEAL_TYPES = [
   { id: 'breakfast', label: '早餐' },
@@ -16,12 +17,31 @@ export const DietitianStudentDetailView = () => {
   const { setCurrentView, selectedStudentId, dietRecords, updateDietRecord, user } = useApp();
   const student = MOCK_STUDENTS.find(s => s.id === selectedStudentId);
 
-  // In a real app, we would filter dietRecords by studentId. 
-  // For this mock, we just show all records to demonstrate functionality.
-  const records = [...dietRecords].sort((a, b) => b.date.localeCompare(a.date));
+  const [activeTab, setActiveTab] = useState<'diet' | 'medical' | 'questionnaire'>('diet');
 
+  // For Diet tab
+  const records = dietRecords
+    .filter(r => r.studentId === selectedStudentId)
+    .sort((a, b) => b.date.localeCompare(a.date));
   const [commentingId, setCommentingId] = useState<string | null>(null);
   const [commentText, setCommentText] = useState('');
+
+  // For Medical tab (Mock local state for editing)
+  const [medicalData, setMedicalData] = useState<MedicalCategory[]>(JSON.parse(JSON.stringify(MOCK_MEDICAL_DATA)));
+  const [isEditingMedical, setIsEditingMedical] = useState(false);
+
+  // For Questionnaire tab
+  const [qData, setQData] = useState<any>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('submitted_questionnaire') || localStorage.getItem('draft_questionnaire');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setQData(parsed.formData || parsed);
+      } catch (e) {}
+    }
+  }, []);
 
   if (!student) {
     return (
@@ -44,11 +64,30 @@ export const DietitianStudentDetailView = () => {
     setCommentText('');
   };
 
+  const handleMedicalChange = (catIdx: number, itemIdx: number, field: 'beforeValue' | 'afterValue', value: string) => {
+    const newData = [...medicalData];
+    newData[catIdx].items[itemIdx][field] = value ? Number(value) : null;
+    
+    // Auto-calculate out of range (simplified mock logic)
+    const item = newData[catIdx].items[itemIdx];
+    if (item.normalRange.includes('-')) {
+      const [min, max] = item.normalRange.split('-').map(Number);
+      if (field === 'beforeValue' && item.beforeValue !== null) {
+        item.isBeforeOut = (item.beforeValue as number) < min || (item.beforeValue as number) > max;
+      }
+      if (field === 'afterValue' && item.afterValue !== null) {
+        item.isAfterOut = (item.afterValue as number) < min || (item.afterValue as number) > max;
+      }
+    }
+    
+    setMedicalData(newData);
+  };
+
   return (
-    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-safe">
-      <NavBar title={`${student.name} 的饮食记录`} onBack={() => setCurrentView('dietitian-dashboard')} />
+    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-safe relative">
+      <NavBar title={`${student.name} 的档案`} onBack={() => setCurrentView('dietitian-dashboard')} />
       
-      <div className="p-4 space-y-4">
+      <div className="bg-white px-4 pt-4 border-b border-gray-200 sticky top-14 z-10 space-y-4">
         <Card className="flex items-center space-x-3 p-4 bg-[#FF976A]/5 border-[#FF976A]/20">
           <div className="h-10 w-10 rounded-full bg-[#FF976A]/10 flex items-center justify-center text-[#FF976A]">
             <UserCircle className="h-6 w-6" />
@@ -61,80 +100,256 @@ export const DietitianStudentDetailView = () => {
           </div>
         </Card>
 
-        {records.length === 0 ? (
-          <div className="text-center py-10 text-gray-400 text-sm bg-white rounded-2xl border border-gray-100">
-            暂无饮食打卡记录
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {records.map(record => (
-              <Card key={record.id} className="p-0 overflow-hidden">
-                <div className="p-4 border-b border-gray-50">
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="text-xs text-gray-500 font-medium">{record.date}</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded text-[#FF976A] bg-[#FF976A]/10 font-bold uppercase">
-                      {MEAL_TYPES.find(m => m.id === record.meal)?.label}
-                    </span>
-                  </div>
-                  
-                  <p className="text-sm text-gray-900 mb-3 whitespace-pre-wrap">{record.description}</p>
-                  
-                  <div className="flex gap-2 overflow-x-auto pb-1">
-                    {record.photos?.map((url, idx) => (
-                      <img key={idx} src={url} alt="食物" className="h-20 w-20 object-cover rounded-lg shrink-0 border border-gray-100" />
-                    ))}
-                  </div>
-                </div>
+        <div className="flex gap-6">
+          <button 
+            className={`py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'diet' ? 'border-[#07C160] text-[#07C160]' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
+            onClick={() => setActiveTab('diet')}
+          >
+            饮食打卡
+          </button>
+          <button 
+            className={`py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'medical' ? 'border-[#07C160] text-[#07C160]' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
+            onClick={() => setActiveTab('medical')}
+          >
+            基础医疗
+          </button>
+          <button 
+            className={`py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'questionnaire' ? 'border-[#07C160] text-[#07C160]' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
+            onClick={() => setActiveTab('questionnaire')}
+          >
+            自查问卷
+          </button>
+        </div>
+      </div>
 
-                <div className="p-4 bg-gray-50/50">
-                  {commentingId === record.id ? (
-                    <div className="space-y-2">
-                      <textarea
-                        className="w-full rounded-lg border border-gray-200 p-2 text-sm focus:outline-none focus:border-[#FF976A]"
-                        rows={3}
-                        placeholder="输入专业批注..."
-                        value={commentText}
-                        onChange={(e) => setCommentText(e.target.value)}
-                        autoFocus
-                      />
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" size="sm" onClick={() => setCommentingId(null)}>取消</Button>
-                        <Button className="bg-[#FF976A] hover:bg-[#c47f66] text-white" size="sm" onClick={() => handleSaveComment(record.id)}>保存</Button>
-                      </div>
+      <div className="p-4 space-y-4">
+        {activeTab === 'diet' && (
+          records.length === 0 ? (
+            <div className="text-center py-10 text-gray-400 text-sm bg-white rounded-2xl border border-gray-100">
+              暂无饮食打卡记录
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {records.map(record => (
+                <Card key={record.id} className="p-0 overflow-hidden">
+                  <div className="p-4 border-b border-gray-50">
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="text-xs text-gray-500 font-medium">{record.date}</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded text-[#FF976A] bg-[#FF976A]/10 font-bold uppercase">
+                        {MEAL_TYPES.find(m => m.id === record.meal)?.label}
+                      </span>
                     </div>
-                  ) : record.dietitianComment ? (
-                    <div className="relative group">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-bold text-[#FF976A]">您的批注</span>
+                    
+                    <p className="text-sm text-gray-900 mb-3 whitespace-pre-wrap">{record.description}</p>
+                    
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                      {record.photos?.map((url, idx) => (
+                        <img key={idx} src={url} alt="食物" className="h-20 w-20 object-cover rounded-lg shrink-0 border border-gray-100" />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-gray-50/50">
+                    {commentingId === record.id ? (
+                      <div className="space-y-2">
+                        <textarea
+                          className="w-full rounded-lg border border-gray-200 p-2 text-sm focus:outline-none focus:border-[#FF976A]"
+                          rows={3}
+                          placeholder="输入专业批注..."
+                          value={commentText}
+                          onChange={(e) => setCommentText(e.target.value)}
+                          autoFocus
+                        />
+                        <div className="flex justify-end gap-2">
+                          <Button variant="outline" size="sm" onClick={() => setCommentingId(null)}>取消</Button>
+                          <Button className="bg-[#FF976A] hover:bg-[#c47f66] text-white" size="sm" onClick={() => handleSaveComment(record.id)}>保存</Button>
+                        </div>
                       </div>
-                      <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                        {record.dietitianComment}
-                      </p>
+                    ) : record.dietitianComment ? (
+                      <div className="relative group">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xs font-bold text-[#FF976A]">您的批注</span>
+                        </div>
+                        <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                          {record.dietitianComment}
+                        </p>
+                        <button 
+                          onClick={() => {
+                            setCommentingId(record.id);
+                            setCommentText(record.dietitianComment || '');
+                          }}
+                          className="text-xs text-[#1677FF] mt-2 block"
+                        >
+                          编辑
+                        </button>
+                      </div>
+                    ) : (
                       <button 
                         onClick={() => {
                           setCommentingId(record.id);
-                          setCommentText(record.dietitianComment || '');
+                          setCommentText('');
                         }}
-                        className="text-xs text-[#1677FF] mt-2 block"
+                        className="flex items-center gap-1 text-sm text-[#FF976A] font-medium"
                       >
-                        编辑
+                        <MessageCircle className="w-4 h-4" />
+                        添加批注
                       </button>
+                    )}
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )
+        )}
+
+        {activeTab === 'medical' && (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+              <div>
+                <h3 className="font-bold text-gray-900 text-sm">医疗数据维护</h3>
+                <p className="text-xs text-gray-500">协助填写和更新学员体检指标</p>
+              </div>
+              <Button 
+                size="sm" 
+                variant={isEditingMedical ? 'primary' : 'outline'}
+                onClick={() => setIsEditingMedical(!isEditingMedical)}
+              >
+                {isEditingMedical ? '完成编辑' : '编辑指标'}
+              </Button>
+            </div>
+
+            {medicalData.map((cat, idx) => (
+              <Card key={idx} className="p-0 overflow-hidden">
+                <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center gap-2">
+                  <Stethoscope className="w-4 h-4 text-[#1677FF]" />
+                  <h3 className="font-bold text-gray-900 text-sm">{cat.title}</h3>
+                </div>
+                <div className="divide-y divide-gray-100">
+                  {cat.items.map((item, iIdx) => (
+                    <div key={iIdx} className="p-4">
+                      <div className="flex justify-between items-center mb-3">
+                        <div className="font-medium text-gray-900 text-sm">{item.name}</div>
+                        <div className="text-[10px] text-gray-400 bg-gray-50 px-2 py-0.5 rounded">
+                          参考: {item.normalRange} {item.unit}
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-gray-50 p-2 rounded flex flex-col justify-center items-center">
+                          <span className="text-[10px] text-gray-500 mb-1">开营前</span>
+                          <div className="text-sm w-full flex justify-center">
+                            {isEditingMedical ? (
+                              <input
+                                type="number"
+                                className="w-20 text-center rounded border border-gray-200 p-1 text-sm focus:border-[#07C160] outline-none"
+                                value={item.beforeValue === null ? '' : item.beforeValue}
+                                onChange={(e) => handleMedicalChange(idx, iIdx, 'beforeValue', e.target.value)}
+                                placeholder="未检测"
+                              />
+                            ) : (
+                              <span className={item.isBeforeOut ? 'text-orange-500 font-bold' : 'text-gray-900 font-medium'}>
+                                {item.beforeValue === null ? <span className="text-gray-400 font-normal">-- 未上传</span> : item.beforeValue}
+                              </span>
+                            )}
+                            {!isEditingMedical && item.beforeValue !== null && item.unit && (
+                              <span className="text-[10px] text-gray-500 ml-1">{item.unit}</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="bg-[#07C160]/5 p-2 rounded flex flex-col justify-center items-center border border-[#07C160]/10">
+                          <span className="text-[10px] text-[#07C160] font-medium mb-1">结营后</span>
+                          <div className="text-sm w-full flex justify-center">
+                            {isEditingMedical ? (
+                              <input
+                                type="number"
+                                className="w-20 text-center rounded border border-gray-200 p-1 text-sm focus:border-[#07C160] outline-none"
+                                value={item.afterValue === null ? '' : item.afterValue}
+                                onChange={(e) => handleMedicalChange(idx, iIdx, 'afterValue', e.target.value)}
+                                placeholder="未检测"
+                              />
+                            ) : (
+                              <span className={item.isAfterOut ? 'text-orange-500 font-bold' : 'text-gray-900 font-medium'}>
+                                {item.afterValue === null ? <span className="text-gray-400 font-normal">-- 待更新</span> : item.afterValue}
+                              </span>
+                            )}
+                            {!isEditingMedical && item.afterValue !== null && item.unit && (
+                              <span className="text-[10px] text-gray-500 ml-1">{item.unit}</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  ) : (
-                    <button 
-                      onClick={() => {
-                        setCommentingId(record.id);
-                        setCommentText('');
-                      }}
-                      className="flex items-center gap-1 text-sm text-[#FF976A] font-medium"
-                    >
-                      <MessageCircle className="w-4 h-4" />
-                      添加批注
-                    </button>
-                  )}
+                  ))}
                 </div>
               </Card>
             ))}
+          </div>
+        )}
+
+        {activeTab === 'questionnaire' && (
+          <div className="space-y-4">
+            <Card>
+              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2 border-b pb-2">
+                <FileText className="h-4 w-4 text-[#07C160]" />
+                学员体检报告
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                {qData?.medicalReports && qData.medicalReports.length > 0 ? (
+                  qData.medicalReports.map((url: string, idx: number) => (
+                    <div key={idx} className="relative aspect-[3/4] rounded-lg overflow-hidden border border-gray-200 cursor-pointer hover:border-[#07C160]">
+                      <img src={url} alt={`报告 ${idx + 1}`} className="w-full h-full object-cover" />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[10px] p-2 truncate">
+                        体检报告_第{idx + 1}页
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    <div className="relative aspect-[3/4] rounded-lg overflow-hidden border border-gray-200 cursor-pointer hover:border-[#07C160]">
+                      <img src="https://source.unsplash.com/random/400x500?document,1" alt="报告 1" className="w-full h-full object-cover" />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[10px] p-2 truncate">
+                        体检报告_第1页.jpg
+                      </div>
+                    </div>
+                    <div className="relative aspect-[3/4] rounded-lg overflow-hidden border border-gray-200 cursor-pointer hover:border-[#07C160]">
+                      <img src="https://source.unsplash.com/random/400x500?document,2" alt="报告 2" className="w-full h-full object-cover" />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[10px] p-2 truncate">
+                        体检报告_第2页.jpg
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </Card>
+
+            <Card>
+              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2 border-b pb-2">
+                <ClipboardList className="h-4 w-4 text-[#07C160]" />
+                基础与健康信息
+              </h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">身高</span><span className="text-gray-900">{qData?.height || '170'} cm</span></div>
+                <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">体重</span><span className="text-gray-900">{qData?.weight || '65'} kg</span></div>
+                <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">疾病史/慢性疾病</span><span className="text-gray-900">{qData?.hasChronic === '有' ? qData.chronicDetails : (qData?.hasChronic === '无' ? '无' : '无')}</span></div>
+                <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">特殊饮食</span><span className="text-gray-900">{qData?.hasSpecialDiet === '有' ? qData.specialDietDetails : (qData?.hasSpecialDiet === '无' ? '无' : '无')}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">过敏史/食物过敏</span><span className="text-gray-900">{qData?.hasFoodAllergy === '有' ? qData.foodAllergyDetails : (qData?.hasFoodAllergy === '无' ? '无' : '无')}</span></div>
+              </div>
+            </Card>
+            
+            <Card>
+              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2 border-b pb-2">
+                <AlertCircle className="h-4 w-4 text-[#07C160]" />
+                生活与运动习惯
+              </h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">作息时间</span><span className="text-gray-900">{qData?.sleepTime || '23:00'} - {qData?.wakeTime || '07:00'} ({qData?.sleepDuration || '8'}h)</span></div>
+                <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">饮酒/吸烟</span><span className="text-gray-900">{qData?.drinkAlcohol || '偶尔'} / {qData?.smoke || '从不'}</span></div>
+                <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">经常吃零食</span><span className="text-gray-900">{qData?.snack || '否'}</span></div>
+                <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">日饮水量</span><span className="text-gray-900">{qData?.dailyWater || '2000'} ml</span></div>
+                <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">每周运动</span><span className="text-gray-900">{qData?.exerciseFrequency || '3'}次 (每次{qData?.exerciseDuration || '45'}分钟)</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">运动类型</span><span className="text-gray-900 text-right">{qData?.exerciseTypes ? qData.exerciseTypes.join(', ') : '跑步, 力量训练'}</span></div>
+              </div>
+            </Card>
           </div>
         )}
       </div>

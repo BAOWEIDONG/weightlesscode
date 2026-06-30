@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../AppContext';
 import { Button, NavBar, Card } from './ui';
+import { UploadCloud, FileText, X } from 'lucide-react';
 
 const EXERCISE_OPTIONS = ['跑步', '快走', '游泳', '骑行', '力量训练', '瑜伽', '球类', '跳绳', '其他'];
 
 export const QuestionnaireView = () => {
-  const { user, setQuestionnaireAnswered, setCurrentView } = useApp();
+  const { user, setUser, setQuestionnaireAnswered, setCurrentView } = useApp();
   
-  // 1: 基础信息, 2: 健康与体检, 3: 生活习惯, 4: 运动与活动
+  // 1: 基础信息, 2: 健康与体检, 3: 生活习惯, 4: 运动与活动, 5: 医疗报告上传
   const [step, setStep] = useState(1);
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState('');
 
   const [formData, setFormData] = useState({
     // Step 1
+    name: user?.name || '',
+    gender: user?.gender || '',
+    age: user?.age ? String(user.age) : '',
     height: '',
     weight: '',
     // Step 2
@@ -34,7 +38,9 @@ export const QuestionnaireView = () => {
     // Step 4
     exerciseFrequency: '',
     exerciseTypes: [] as string[],
-    exerciseDuration: ''
+    exerciseDuration: '',
+    // Step 5
+    medicalReports: [] as string[]
   });
 
   // Mock auto-save load
@@ -62,10 +68,12 @@ export const QuestionnaireView = () => {
     setError('');
     // Validate current step
     if (step === 1) {
-      if (!formData.height || !formData.weight) {
-        setError('请完善身高和体重信息');
+      if (!formData.name || !formData.gender || !formData.age || !formData.height || !formData.weight) {
+        setError('请完善所有必填信息');
         return;
       }
+      const a = parseInt(formData.age);
+      if (a < 1 || a > 120) { setError('请输入正确的年龄'); return; }
       const h = parseFloat(formData.height);
       const w = parseFloat(formData.weight);
       if (h < 100 || h > 250) { setError('身高需在100-250cm之间'); return; }
@@ -93,7 +101,7 @@ export const QuestionnaireView = () => {
       if (ef < 0 || ef > 21) { setError('每周运动频率需在0-21次之间'); return; }
       const ed = parseInt(formData.exerciseDuration);
       if (ed < 0 || ed > 600) { setError('每次运动时长需在0-600分钟之间'); return; }
-      
+    } else if (step === 5) {
       // Open confirm dialog
       setShowConfirm(true);
       return;
@@ -108,6 +116,16 @@ export const QuestionnaireView = () => {
   };
 
   const handleSubmit = () => {
+    if (user) {
+      setUser({
+        ...user,
+        name: formData.name,
+        gender: formData.gender as 'male' | 'female',
+        age: parseInt(formData.age),
+        height: parseFloat(formData.height),
+      });
+    }
+    localStorage.setItem('submitted_questionnaire', JSON.stringify(formData));
     localStorage.removeItem('draft_questionnaire'); // clear draft
     setQuestionnaireAnswered(true);
     setCurrentView('dashboard');
@@ -122,7 +140,22 @@ export const QuestionnaireView = () => {
     });
   };
 
-  const steps = ['基础信息', '健康与体检', '生活习惯', '运动与活动'];
+  const handleSimulateUpload = () => {
+    if (formData.medicalReports.length >= 5) return;
+    setFormData(p => ({
+      ...p,
+      medicalReports: [...p.medicalReports, `https://source.unsplash.com/random/400x500?document&sig=${Date.now()}`]
+    }));
+  };
+
+  const removeReport = (idx: number) => {
+    setFormData(p => ({
+      ...p,
+      medicalReports: p.medicalReports.filter((_, i) => i !== idx)
+    }));
+  };
+
+  const steps = ['基础信息', '健康体检', '生活习惯', '运动活动', '报告上传'];
 
   return (
     <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-safe relative">
@@ -131,7 +164,7 @@ export const QuestionnaireView = () => {
       <div className="p-4 flex-1 flex flex-col space-y-4">
         {/* Progress */}
         <div className="mb-2">
-          <div className="flex justify-between text-xs text-gray-500 mb-2">
+          <div className="flex justify-between text-[10px] text-gray-500 mb-2">
             {steps.map((s, idx) => (
               <div key={idx} className={`flex-1 text-center ${step === idx + 1 ? 'font-bold text-[#07C160]' : step > idx + 1 ? 'text-[#07C160]' : ''}`}>
                 {s}
@@ -152,18 +185,40 @@ export const QuestionnaireView = () => {
             
             <div className="space-y-3">
               <div>
-                <label className="text-sm text-gray-500">姓名</label>
-                <div className="p-3 bg-gray-50 rounded-lg text-gray-900">{user?.name || '学员'}</div>
+                <label className="text-sm font-medium text-gray-700 block mb-1">姓名 <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  placeholder="请输入您的真实姓名"
+                  className="w-full rounded-lg border border-gray-200 p-3 focus:border-[#07C160] focus:outline-none"
+                  value={formData.name}
+                  onChange={(e) => setFormData(p => ({ ...p, name: e.target.value }))}
+                />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-sm text-gray-500">年龄</label>
-                  <div className="p-3 bg-gray-50 rounded-lg text-gray-900">{user?.age || '--'} 岁</div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-700 block mb-2">性别 <span className="text-red-500">*</span></label>
+                <div className="flex gap-4">
+                  {['男', '女'].map(opt => {
+                    const val = opt === '男' ? 'male' : 'female';
+                    return (
+                      <label key={opt} className="flex items-center space-x-2">
+                        <input type="radio" checked={formData.gender === val} onChange={() => setFormData(p => ({ ...p, gender: val }))} className="text-[#07C160]" />
+                        <span>{opt}</span>
+                      </label>
+                    );
+                  })}
                 </div>
-                <div>
-                  <label className="text-sm text-gray-500">性别</label>
-                  <div className="p-3 bg-gray-50 rounded-lg text-gray-900">{user?.gender === 'female' ? '女' : '男'}</div>
-                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700 block mb-1">年龄 <span className="text-red-500">*</span></label>
+                <input
+                  type="number"
+                  placeholder="例如: 28"
+                  className="w-full rounded-lg border border-gray-200 p-3 focus:border-[#07C160] focus:outline-none"
+                  value={formData.age}
+                  onChange={(e) => setFormData(p => ({ ...p, age: e.target.value }))}
+                />
               </div>
               
               <div>
@@ -201,7 +256,7 @@ export const QuestionnaireView = () => {
             <h3 className="font-bold text-gray-900 border-b pb-2">板块二：健康与体检信息</h3>
             
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 block">是否有慢性疾病 <span className="text-red-500">*</span></label>
+              <label className="text-sm font-medium text-gray-700 block">疾病史/慢性疾病 <span className="text-red-500">*</span></label>
               <div className="flex gap-4">
                 {['无', '有'].map(opt => (
                   <label key={opt} className="flex items-center space-x-2">
@@ -243,7 +298,7 @@ export const QuestionnaireView = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 block">是否有食物过敏 <span className="text-red-500">*</span></label>
+              <label className="text-sm font-medium text-gray-700 block">过敏史/食物过敏 <span className="text-red-500">*</span></label>
               <div className="flex gap-4">
                 {['无', '有'].map(opt => (
                   <label key={opt} className="flex items-center space-x-2">
@@ -397,6 +452,46 @@ export const QuestionnaireView = () => {
           </Card>
         )}
 
+        {/* Step 5: 医疗报告上传 */}
+        {step === 5 && (
+          <Card className="space-y-6 flex-1">
+            <h3 className="font-bold text-gray-900 border-b pb-2">板块五：医疗报告上传</h3>
+            <p className="text-sm text-gray-500">
+              请上传您的体检报告或相关医疗材料（支持图片或PDF）。这些材料将用于建立您的基础医疗数据，并在结营后进行对比更新。
+            </p>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-3 gap-2">
+                {formData.medicalReports.map((url, idx) => (
+                  <div key={idx} className="relative aspect-[3/4] rounded-lg overflow-hidden border border-gray-200 group">
+                    <img src={url} alt={`报告 ${idx + 1}`} className="w-full h-full object-cover" />
+                    <button 
+                      onClick={() => removeReport(idx)}
+                      className="absolute top-1 right-1 bg-black/50 rounded-full p-1 text-white hover:bg-black/70"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[10px] p-1 truncate">
+                      体检报告_{idx + 1}
+                    </div>
+                  </div>
+                ))}
+                
+                {formData.medicalReports.length < 5 && (
+                  <button 
+                    onClick={handleSimulateUpload}
+                    className="aspect-[3/4] flex flex-col items-center justify-center rounded-lg border border-dashed border-[#07C160]/40 bg-[#07C160]/5 text-[#07C160] hover:bg-[#07C160]/10 transition-colors"
+                  >
+                    <UploadCloud className="w-6 h-6 mb-1" />
+                    <span className="text-[10px]">添加文件</span>
+                  </button>
+                )}
+              </div>
+              <p className="text-[10px] text-gray-400 mt-2">支持 JPG/PNG/PDF 格式，最多上传5份，单份不超过 10MB</p>
+            </div>
+          </Card>
+        )}
+
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
         
         {/* Navigation */}
@@ -407,7 +502,7 @@ export const QuestionnaireView = () => {
             </Button>
           )}
           <Button className="flex-1 bg-[#07C160] hover:bg-[#07C160]/90 text-white" onClick={handleNext}>
-            {step === 4 ? '提交' : '下一题'}
+            {step === 5 ? '提交' : '下一题'}
           </Button>
         </div>
       </div>
@@ -431,4 +526,5 @@ export const QuestionnaireView = () => {
     </div>
   );
 };
+
 

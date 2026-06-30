@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useApp } from '../AppContext';
 import { NavBar, Card, Button } from './ui';
-import { FileDown, Activity, Heart, FileText, ClipboardList, Stethoscope, AlertCircle } from 'lucide-react';
+import { FileDown, Activity, Heart, FileText, ClipboardList, Stethoscope, AlertCircle, UploadCloud } from 'lucide-react';
 
 type Indicator = {
   name: string;
@@ -13,12 +13,12 @@ type Indicator = {
   isAfterOut: boolean;
 };
 
-type Category = {
+export type MedicalCategory = {
   title: string;
   items: Indicator[];
 };
 
-const MOCK_MEDICAL_DATA: Category[] = [
+export const MOCK_MEDICAL_DATA: MedicalCategory[] = [
   {
     title: '体成分检测',
     items: [
@@ -88,30 +88,41 @@ export const HealthProfileView = () => {
 
   useEffect(() => {
     // Try to load questionnaire data
-    const saved = localStorage.getItem('draft_questionnaire');
+    const saved = localStorage.getItem('submitted_questionnaire') || localStorage.getItem('draft_questionnaire');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setQData(parsed.formData);
+        setQData(parsed.formData || parsed);
       } catch (e) {
         // ignore
       }
     }
   }, []);
 
-  const renderValue = (val: number | string | null, isOut: boolean) => {
-    if (val === null) return <span className="text-gray-400">-- 待上传</span>;
+  const renderValue = (val: number | string | null, isOut: boolean, isAfter: boolean = false) => {
+    if (val === null) return <span className="text-gray-400">-- {isAfter ? '待更新' : '待上传'}</span>;
     if (val === undefined || val === '') return <span className="text-gray-400">-- 未检测</span>;
     return <span className={isOut ? 'text-orange-500 font-bold' : 'text-gray-900 font-medium'}>{val}</span>;
+  };
+
+  const handleUploadReport = () => {
+    // Simulate report upload
+    alert('模拟上传体检报告功能，实际会弹出文件选择器。');
   };
 
   return (
     <div className="flex h-screen flex-col bg-[#F7F8FA] pb-20 overflow-y-auto">
       <NavBar title="健康档案" onBack={() => setCurrentView('dashboard')} right={
-        <button className="text-gray-500 hover:text-gray-900 p-2"><FileDown className="h-5 w-5" /></button>
+        <div className="flex items-center gap-1">
+          {activeTab === 'medical' && (
+            <button className="text-[#07C160] hover:bg-green-50 p-2 rounded-full transition-colors" onClick={handleUploadReport}>
+              <UploadCloud className="h-5 w-5" />
+            </button>
+          )}
+        </div>
       } />
       
-      <div className="bg-white px-4 border-b border-gray-200 sticky top-0 z-10">
+      <div className="bg-white px-4 border-b border-gray-200 sticky top-14 z-10">
         <div className="flex gap-6">
           <button 
             className={`py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'medical' ? 'border-[#07C160] text-[#07C160]' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
@@ -145,9 +156,9 @@ export const HealthProfileView = () => {
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">身高</span><span className="text-gray-900">{qData?.height || '--'} cm</span></div>
                     <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">体重</span><span className="text-gray-900">{qData?.weight || '--'} kg</span></div>
-                    <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">慢性疾病</span><span className="text-gray-900">{qData?.hasChronic === '有' ? qData.chronicDetails : '无'}</span></div>
+                    <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">疾病史/慢性疾病</span><span className="text-gray-900">{qData?.hasChronic === '有' ? qData.chronicDetails : '无'}</span></div>
                     <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">特殊饮食</span><span className="text-gray-900">{qData?.hasSpecialDiet === '有' ? qData.specialDietDetails : '无'}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-500">食物过敏</span><span className="text-gray-900">{qData?.hasFoodAllergy === '有' ? qData.foodAllergyDetails : '无'}</span></div>
+                    <div className="flex justify-between"><span className="text-gray-500">过敏史/食物过敏</span><span className="text-gray-900">{qData?.hasFoodAllergy === '有' ? qData.foodAllergyDetails : '无'}</span></div>
                   </div>
                 </Card>
                 <Card>
@@ -173,7 +184,7 @@ export const HealthProfileView = () => {
           <div className="space-y-4">
             <Card className="bg-orange-50 border-orange-100">
               <p className="text-xs text-orange-800">
-                提示：橙色字体表示该指标超出医学参考范围。结营后数据若为空，显示为“待上传”；若报告中未包含该项，显示为“未检测”。
+                提示：这部分数据在客户结营完成后进行更新。橙色字体表示该指标超出医学参考范围。结营后数据若为空，显示为“待更新”；若报告中未包含该项，显示为“未检测”。
               </p>
             </Card>
 
@@ -197,7 +208,7 @@ export const HealthProfileView = () => {
                         <div className="bg-gray-50 p-2 rounded flex flex-col justify-center items-center">
                           <span className="text-[10px] text-gray-500 mb-1">开营前</span>
                           <div className="text-sm">
-                            {renderValue(item.beforeValue, item.isBeforeOut)}
+                            {renderValue(item.beforeValue, item.isBeforeOut, false)}
                             {item.beforeValue !== null && item.beforeValue !== undefined && item.beforeValue !== '' && item.unit && (
                               <span className="text-[10px] text-gray-500 ml-1">{item.unit}</span>
                             )}
@@ -206,7 +217,7 @@ export const HealthProfileView = () => {
                         <div className="bg-[#07C160]/5 p-2 rounded flex flex-col justify-center items-center border border-[#07C160]/10">
                           <span className="text-[10px] text-[#07C160] font-medium mb-1">结营后</span>
                           <div className="text-sm">
-                            {renderValue(item.afterValue, item.isAfterOut)}
+                            {renderValue(item.afterValue, item.isAfterOut, true)}
                             {item.afterValue !== null && item.afterValue !== undefined && item.afterValue !== '' && item.unit && (
                               <span className="text-[10px] text-gray-500 ml-1">{item.unit}</span>
                             )}
@@ -218,18 +229,6 @@ export const HealthProfileView = () => {
                 </div>
               </Card>
             ))}
-
-            <Card className="p-0 overflow-hidden">
-              <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-orange-500" />
-                <h3 className="font-bold text-gray-900 text-sm">其他异常指标</h3>
-              </div>
-              <div className="p-4">
-                <div className="text-center py-6 text-gray-400 text-sm">
-                  暂无其他异常指标记录
-                </div>
-              </div>
-            </Card>
           </div>
         )}
       </div>

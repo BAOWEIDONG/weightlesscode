@@ -1,7 +1,7 @@
 import React from 'react';
 import { useApp } from '../AppContext';
 import { NavBar, Card } from './ui';
-import { Activity, Coffee, Calendar, FileText, UserCircle, Scale, PlayCircle } from 'lucide-react';
+import { Activity, Coffee, Calendar, FileText, UserCircle, Scale, PlayCircle, LogOut } from 'lucide-react';
 
 export const StudentDashboardView = () => {
   const { user, setCurrentView, weightRecords } = useApp();
@@ -10,6 +10,15 @@ export const StudentDashboardView = () => {
   return (
     <div className="flex h-screen flex-col bg-white pb-20 overflow-y-auto">
       <div className="pt-12 px-6 pb-4 bg-gradient-to-b from-[#07C160]/10 to-white border-b border-gray-100">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-sm font-bold text-[#07C160] flex items-center gap-1">
+            <Activity className="h-4 w-4" />
+            28天轻体减重
+          </h1>
+          <button onClick={() => setCurrentView('login')} className="text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1 text-xs">
+            <LogOut className="h-4 w-4" /> 退出
+          </button>
+        </div>
         <div className="flex items-center space-x-4">
           <div className="h-16 w-16 rounded-full bg-[#07C160] flex items-center justify-center shadow-sm">
             <UserCircle className="h-10 w-10 text-white" />
@@ -81,7 +90,7 @@ export const StudentDashboardView = () => {
                 <PlayCircle className="h-5 w-5" />
               </div>
               <div>
-                <div className="text-xs font-bold text-gray-900">锻炼视频</div>
+                <div className="text-xs font-bold text-gray-900">锻炼活动</div>
                 <div className="text-[10px] text-gray-500">健康指导与教学</div>
               </div>
             </div>

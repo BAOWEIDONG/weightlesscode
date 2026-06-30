@@ -127,6 +127,12 @@ export const CalendarView = () => {
                       ))}
                     </div>
                   )}
+                  {ex.coachComment && (
+                    <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                      <div className="text-xs font-bold text-blue-500 mb-1">教练点评：</div>
+                      <p className="text-sm text-blue-900">{ex.coachComment}</p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -153,6 +159,12 @@ export const CalendarView = () => {
                       {diet.photos.map((url, idx) => (
                         <img key={idx} src={url} alt="食物照片" className="h-16 w-16 object-cover rounded-lg shrink-0" />
                       ))}
+                    </div>
+                  )}
+                  {diet.dietitianComment && (
+                    <div className="mt-3 p-3 bg-orange-50 rounded-lg border border-orange-100">
+                      <div className="text-xs font-bold text-[#FF976A] mb-1">营养师批注：</div>
+                      <p className="text-sm text-orange-900">{diet.dietitianComment}</p>
                     </div>
                   )}
                 </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useApp } from '../AppContext';
 import { NavBar, Card, Button } from './ui';
-import { Users, Camera, UserCircle, Video } from 'lucide-react';
+import { Users, Camera, UserCircle, Video, LogOut } from 'lucide-react';
 
 export const MOCK_STUDENTS = [
   { id: 's1', name: '李明', age: 32, gender: 'male', phone: '13800000001' },
@@ -15,6 +15,11 @@ export const CoachDashboardView = () => {
   return (
     <div className="flex h-screen flex-col bg-white overflow-y-auto pb-20">
       <div className="pt-12 px-6 pb-4 bg-gradient-to-b from-[#07C160]/10 to-white border-b border-gray-100">
+        <div className="flex justify-end mb-2">
+          <button onClick={() => setCurrentView('login')} className="text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1 text-xs">
+            <LogOut className="h-4 w-4" /> 退出
+          </button>
+        </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="h-16 w-16 rounded-full bg-[#07C160] flex items-center justify-center shadow-sm">

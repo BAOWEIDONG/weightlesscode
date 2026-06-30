@@ -12,7 +12,7 @@ const MEAL_TYPES = [
 ];
 
 export const DietView = () => {
-  const { setCurrentView, addDietRecord, dietRecords } = useApp();
+  const { setCurrentView, addDietRecord, dietRecords, user } = useApp();
   
   const todayStr = format(new Date(), 'yyyy-MM-dd');
   const todayDiets = dietRecords.filter(r => r.date === todayStr);
@@ -60,6 +60,7 @@ export const DietView = () => {
     setError('');
     addDietRecord({
       id: `diet_${Date.now()}`,
+      studentId: user?.id || 's1',
       date: todayStr,
       meal: formData.meal as any,
       description: formData.description,

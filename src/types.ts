@@ -26,10 +26,12 @@ export interface ExerciseRecord {
   intensity: number;
   notes?: string;
   photos?: string[];
+  coachComment?: string;
 }
 
 export interface DietRecord {
   id: string;
+  studentId?: string;
   date: string;
   meal: 'breakfast' | 'lunch' | 'dinner' | 'snack';
   description: string;

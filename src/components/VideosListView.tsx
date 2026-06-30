@@ -13,7 +13,7 @@ export const VideosListView = () => {
 
   return (
     <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-safe">
-      <NavBar title="锻炼视频" onBack={() => setCurrentView('dashboard')} />
+      <NavBar title="锻炼活动" onBack={() => setCurrentView('dashboard')} />
       
       <div className="p-4 space-y-4">
         {videoRecords.length === 0 ? (

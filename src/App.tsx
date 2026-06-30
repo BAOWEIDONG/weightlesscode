@@ -22,6 +22,7 @@ import { VideoPlayerView } from './components/VideoPlayerView';
 import { VideoUploadView } from './components/VideoUploadView';
 import { DietitianDashboardView } from './components/DietitianDashboardView';
 import { DietitianStudentDetailView } from './components/DietitianStudentDetailView';
+import { DietitianUnannotatedListView } from './components/DietitianUnannotatedListView';
 import { CampStatsView } from './components/CampStatsView';
 
 const AppContent = () => {
@@ -45,6 +46,7 @@ const AppContent = () => {
     case 'video-player': return <VideoPlayerView />;
     case 'dietitian-dashboard': return <DietitianDashboardView />;
     case 'dietitian-student-detail': return <DietitianStudentDetailView />;
+    case 'dietitian-unannotated-list': return <DietitianUnannotatedListView />;
     case 'camp-stats': return <CampStatsView />;
     default: return <LoginView />;
   }
