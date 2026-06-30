@@ -54,7 +54,7 @@ export const UploadView = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-8">
+    <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-8">
       <NavBar title="数据上传" />
       <div className="p-4 space-y-4">
         <Card className="space-y-4">

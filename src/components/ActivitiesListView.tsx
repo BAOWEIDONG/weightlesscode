@@ -7,7 +7,7 @@ export const ActivitiesListView = () => {
   const { setCurrentView, coachActivities } = useApp();
 
   return (
-    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-safe font-sans">
+    <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-safe font-sans">
       <NavBar title="锻炼活动" onBack={() => setCurrentView('dashboard')} />
       
       <div className="p-4 space-y-5">

@@ -90,7 +90,7 @@ export const DietView = () => {
   const history = [...todayDiets].sort((a, b) => b.date.localeCompare(a.date));
 
   return (
-    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-8">
+    <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-8">
       <NavBar title="饮食打卡" onBack={() => setCurrentView('dashboard')} />
       
       <div className="p-4 space-y-6">

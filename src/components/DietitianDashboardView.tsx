@@ -75,7 +75,7 @@ export const DietitianDashboardView = () => {
   );
 
   return (
-    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-20 font-sans">
+    <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-20 font-sans">
       <div className="pt-12 px-6 pb-6 bg-gradient-to-b from-[#FF976A]/10 to-[#F7F8FA]">
         <div className="flex justify-end mb-2">
           <button onClick={() => setCurrentView('login')} className="text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1 text-xs bg-white/50 px-2 py-1 rounded-full backdrop-blur-sm">

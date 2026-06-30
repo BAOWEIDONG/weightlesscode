@@ -107,7 +107,7 @@ export const HealthProfileView = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-[#F7F8FA] pb-20 overflow-y-auto font-sans">
+    <div className="flex h-full flex-col bg-[#F7F8FA] pb-20 overflow-y-auto font-sans">
       <NavBar title="健康档案" onBack={() => setCurrentView('dashboard')} right={
         <div className="flex items-center gap-1">
           <button className="text-[#07C160] hover:bg-green-50 p-2 rounded-full transition-colors" onClick={handleUploadReport}>

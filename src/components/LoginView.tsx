@@ -48,7 +48,7 @@ export const LoginView = () => {
 
   if (step === 1) {
     return (
-      <div className="flex h-screen flex-col bg-[#F7F8FA]">
+      <div className="flex h-full flex-col bg-[#F7F8FA]">
         <NavBar title="授权登录" />
         <div className="flex flex-1 flex-col items-center justify-center p-6 space-y-12">
           <div className="flex flex-col items-center space-y-4">

@@ -46,7 +46,7 @@ export const CoachRecordView = () => {
 
   if (!student) {
     return (
-      <div className="flex h-screen flex-col bg-[#F7F8FA] pb-safe">
+      <div className="flex h-full flex-col bg-[#F7F8FA] pb-safe">
         <NavBar title="上传陪练记录" onBack={() => setCurrentView('coach-dashboard')} />
         <div className="flex-1 flex items-center justify-center text-gray-500 text-sm">
           未选择学员

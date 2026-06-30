@@ -46,7 +46,7 @@ export const ActivityUploadView = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-safe">
+    <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-safe">
       <NavBar title="发布锻炼活动" onBack={() => setCurrentView('coach-dashboard')} />
       
       <div className="p-4 space-y-4">

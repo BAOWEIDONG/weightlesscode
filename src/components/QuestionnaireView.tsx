@@ -168,7 +168,7 @@ export const QuestionnaireView = () => {
   const steps = ['基础信息', '健康体检', '生活习惯', '运动活动', '报告上传'];
 
   return (
-    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-safe relative">
+    <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-safe relative">
       <NavBar title="自查问卷" />
       
       <div className="p-4 flex-1 flex flex-col space-y-4">

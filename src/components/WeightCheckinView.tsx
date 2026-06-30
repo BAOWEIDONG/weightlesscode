@@ -35,7 +35,7 @@ export const WeightCheckinView = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-safe">
+    <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-safe">
       <NavBar title="体重打卡" onBack={() => setCurrentView('dashboard')} />
       
       <div className="p-6 space-y-6">

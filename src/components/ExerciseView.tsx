@@ -76,7 +76,7 @@ export const ExerciseView = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-8 font-sans">
+    <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-8 font-sans">
       <NavBar title="运动打卡" onBack={() => setCurrentView('dashboard')} />
       
       <div className="p-4 space-y-4">
