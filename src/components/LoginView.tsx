@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../AppContext';
 import { Button, Input, NavBar } from './ui';
-import { MessageCircle, UserCircle, Dumbbell, Leaf } from 'lucide-react';
+import { MessageCircle, UserCircle, Dumbbell, Leaf, Activity } from 'lucide-react';
 
 export const LoginView = () => {
   const { setUser, setCurrentView } = useApp();
@@ -53,7 +53,7 @@ export const LoginView = () => {
         <div className="flex flex-1 flex-col items-center justify-center p-6 space-y-12">
           <div className="flex flex-col items-center space-y-4">
             <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-[#07C160]">
-              <MessageCircle className="h-12 w-12 text-white" />
+              <Activity className="h-12 w-12 text-white" />
             </div>
             <h1 className="text-2xl font-semibold text-gray-900">28天轻体减重</h1>
             <p className="text-gray-500 text-center text-sm">授权获取您的微信头像和昵称</p>
