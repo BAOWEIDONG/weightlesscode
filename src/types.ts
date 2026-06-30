@@ -8,8 +8,10 @@ export interface User {
   gender?: 'male' | 'female';
   age?: number;
   height?: number;
+  weight?: number;
   medicalHistory?: string;
   allergies?: string;
+  medicalReports?: string[];
 }
 
 export interface WeightRecord {
@@ -20,6 +22,7 @@ export interface WeightRecord {
 
 export interface ExerciseRecord {
   id: string;
+  studentId?: string;
   date: string;
   type: string;
   duration: number;
@@ -38,6 +41,7 @@ export interface DietRecord {
   photos: string[];
   dietitianComment?: string;
   dietitianName?: string;
+  dietitianCommentDate?: string;
 }
 
 export interface CoachRecord {
@@ -48,13 +52,11 @@ export interface CoachRecord {
   photos: string[];
 }
 
-export interface VideoRecord {
+export interface CoachActivityRecord {
   id: string;
   title: string;
-  description?: string;
-  videoUrl: string;
-  coverUrl: string;
+  description: string;
+  imageUrls: string[];
   coachName: string;
-  uploadTime: string;
-  targetStudents?: string[]; // 'all' or list of ids
+  date: string;
 }

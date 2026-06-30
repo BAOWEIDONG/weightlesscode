@@ -2,17 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../AppContext';
 import { NavBar, Button, Card } from './ui';
 import { Scale } from 'lucide-react';
+import { format } from 'date-fns';
 
 export const WeightCheckinView = () => {
-  const { setCurrentView, addWeightRecord, weightRecords } = useApp();
+  const { setCurrentView, addWeightRecord, weightRecords, user } = useApp();
   const [weight, setWeight] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (weightRecords.length > 0) {
       setWeight(weightRecords[weightRecords.length - 1].weight.toString());
+    } else if (user?.weight) {
+      setWeight(user.weight.toString());
     }
-  }, [weightRecords]);
+  }, [weightRecords, user]);
 
   const handleSubmit = () => {
     const val = parseFloat(weight);
@@ -24,7 +27,7 @@ export const WeightCheckinView = () => {
     setError('');
     addWeightRecord({
       id: `w_${Date.now()}`,
-      date: new Date().toISOString().split('T')[0],
+      date: format(new Date(), 'yyyy-MM-dd HH:mm'),
       weight: parseFloat(val.toFixed(1))
     });
     
@@ -32,7 +35,7 @@ export const WeightCheckinView = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-safe">
+    <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-safe">
       <NavBar title="体重打卡" onBack={() => setCurrentView('dashboard')} />
       
       <div className="p-6 space-y-6">
