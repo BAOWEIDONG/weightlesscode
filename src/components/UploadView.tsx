@@ -1,4 +1,3 @@
-import { format } from "date-fns";
 import React, { useState } from 'react';
 import { useApp } from '../AppContext';
 import { Button, Input, NavBar, Card } from './ui';
@@ -46,7 +45,7 @@ export const UploadView = () => {
     // Save weight
     addWeightRecord({
       id: `w_${Date.now()}`,
-      date: format(new Date(), 'yyyy-MM-dd HH:mm'),
+      date: new Date().toISOString().split('T')[0],
       weight: w,
     });
     
@@ -54,7 +53,7 @@ export const UploadView = () => {
   };
 
   return (
-    <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-8">
+    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-8">
       <NavBar title="数据上传" />
       <div className="p-4 space-y-4">
         <Card className="space-y-4">

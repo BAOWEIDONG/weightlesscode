@@ -2,7 +2,7 @@ import React from 'react';
 import { useApp } from '../AppContext';
 import { NavBar, Card } from './ui';
 import { UserCircle, Coffee, Clock } from 'lucide-react';
-import { MOCK_STUDENTS } from '../AppContext';
+import { MOCK_STUDENTS } from './CoachDashboardView';
 
 const MEAL_TYPES = [
   { id: 'breakfast', label: '早餐' },
@@ -33,7 +33,7 @@ export const DietitianUnannotatedListView = () => {
   });
 
   return (
-    <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-safe">
+    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-safe">
       <NavBar title="待批注饮食" onBack={() => setCurrentView('dietitian-dashboard')} />
       
       <div className="p-4 space-y-4">

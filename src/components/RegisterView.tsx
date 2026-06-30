@@ -33,7 +33,7 @@ export const RegisterView = () => {
   };
 
   return (
-    <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-8">
+    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-8">
       <NavBar title="完善基本信息" />
       <div className="p-4 space-y-4">
         <Card className="space-y-4">

@@ -17,8 +17,9 @@ import { CalendarView } from './components/CalendarView';
 import { CoachDashboardView } from './components/CoachDashboardView';
 import { CoachRecordView } from './components/CoachRecordView';
 import { WeightCheckinView } from './components/WeightCheckinView';
-import { ActivitiesListView } from './components/ActivitiesListView';
-import { ActivityUploadView } from './components/ActivityUploadView';
+import { VideosListView } from './components/VideosListView';
+import { VideoPlayerView } from './components/VideoPlayerView';
+import { VideoUploadView } from './components/VideoUploadView';
 import { DietitianDashboardView } from './components/DietitianDashboardView';
 import { DietitianStudentDetailView } from './components/DietitianStudentDetailView';
 import { DietitianUnannotatedListView } from './components/DietitianUnannotatedListView';
@@ -40,8 +41,9 @@ const AppContent = () => {
     case 'calendar': return <CalendarView />;
     case 'coach-dashboard': return <CoachDashboardView />;
     case 'coach-record-upload': return <CoachRecordView />;
-    case 'activity-upload': return <ActivityUploadView />;
-    case 'activities-list': return <ActivitiesListView />;
+    case 'video-upload': return <VideoUploadView />;
+    case 'videos-list': return <VideosListView />;
+    case 'video-player': return <VideoPlayerView />;
     case 'dietitian-dashboard': return <DietitianDashboardView />;
     case 'dietitian-student-detail': return <DietitianStudentDetailView />;
     case 'dietitian-unannotated-list': return <DietitianUnannotatedListView />;
@@ -53,7 +55,7 @@ const AppContent = () => {
 export default function App() {
   return (
     <AppProvider>
-      <div className="w-full h-[100dvh] max-w-md mx-auto overflow-hidden bg-[#F7F8FA] font-sans text-gray-700 sm:shadow-2xl sm:border-x sm:border-gray-100 relative">
+      <div className="mx-auto max-w-md h-screen overflow-hidden bg-[#F7F8FA] font-sans text-gray-700 shadow-2xl sm:border-x sm:border-gray-100 relative">
         <AppContent />
       </div>
     </AppProvider>

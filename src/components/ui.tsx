@@ -53,58 +53,6 @@ export const Card = ({ className, children, ...props }: React.HTMLAttributes<HTM
   </div>
 );
 
-export const ImageCarousel = ({ imageUrls, heightClass = "h-48" }: { imageUrls: string[], heightClass?: string }) => {
-  const [currentIndex, setCurrentIndex] = React.useState(0);
-  const scrollRef = React.useRef<HTMLDivElement>(null);
-
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    if (!scrollRef.current) return;
-    const scrollPosition = e.currentTarget.scrollLeft;
-    const width = scrollRef.current.clientWidth;
-    const newIndex = Math.round(scrollPosition / width);
-    if (newIndex !== currentIndex) {
-      setCurrentIndex(newIndex);
-    }
-  };
-
-  if (!imageUrls || imageUrls.length === 0) return null;
-
-  return (
-    <div className="relative group">
-      <div 
-        ref={scrollRef}
-        onScroll={handleScroll}
-        className="flex overflow-x-auto snap-x snap-mandatory bg-gray-50 border-b border-gray-100 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-      >
-        {imageUrls.map((url, idx) => (
-          <div key={idx} className={`relative ${heightClass} w-full shrink-0 snap-center`}>
-            <img 
-              src={url} 
-              alt={`img ${idx + 1}`} 
-              className="w-full h-full object-cover"
-            />
-          </div>
-        ))}
-      </div>
-      {imageUrls.length > 1 && (
-        <>
-          <div className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] font-medium px-2 py-1 rounded-full backdrop-blur-sm pointer-events-none">
-            滑动多图 ({imageUrls.length}张)
-          </div>
-          <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 pointer-events-none">
-            {imageUrls.map((_, idx) => (
-              <div 
-                key={idx} 
-                className={`h-1.5 rounded-full transition-all ${idx === currentIndex ? 'w-4 bg-[#07C160] shadow-sm' : 'w-1.5 bg-white/70 backdrop-blur-sm'}`} 
-              />
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
-};
-
 export const NavBar = ({ title, onBack, right, className }: { title: string; onBack?: () => void; right?: React.ReactNode; className?: string }) => (
   <div className={cn("sticky top-0 z-50 flex h-14 items-center justify-between bg-white/80 backdrop-blur-md px-4 border-b border-gray-100/50", className)}>
     <div className="flex w-16 items-center">

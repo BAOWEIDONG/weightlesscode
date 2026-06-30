@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { useApp, MOCK_STUDENTS } from '../AppContext';
+import { useApp } from '../AppContext';
 import { NavBar, Card, Button } from './ui';
 import { Camera, X, UserCircle } from 'lucide-react';
+import { MOCK_STUDENTS } from './CoachDashboardView';
 import { format } from 'date-fns';
 
 export const CoachRecordView = () => {
@@ -46,7 +47,7 @@ export const CoachRecordView = () => {
 
   if (!student) {
     return (
-      <div className="flex h-full flex-col bg-[#F7F8FA] pb-safe">
+      <div className="flex h-screen flex-col bg-[#F7F8FA] pb-safe">
         <NavBar title="上传陪练记录" onBack={() => setCurrentView('coach-dashboard')} />
         <div className="flex-1 flex items-center justify-center text-gray-500 text-sm">
           未选择学员
