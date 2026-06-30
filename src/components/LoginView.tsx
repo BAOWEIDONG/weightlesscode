@@ -9,6 +9,7 @@ export const LoginView = () => {
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
   const [role, setRole] = useState<'student' | 'coach' | 'dietitian'>('student');
+  const [agreed, setAgreed] = useState(false);
 
   const [error, setError] = useState('');
 
@@ -21,6 +22,10 @@ export const LoginView = () => {
   };
 
   const handlePhoneSubmit = () => {
+    if (!agreed) {
+      setError('请先勾选同意《服务协议》与《隐私政策》');
+      return;
+    }
     if (phone.length === 11 && code.length === 6) {
       setError('');
       setUser({
@@ -147,9 +152,17 @@ export const LoginView = () => {
           <Button className="w-full h-12 text-base font-medium rounded-full shadow-lg shadow-[#07C160]/20" onClick={handlePhoneSubmit}>
             确认绑定
           </Button>
-          <p className="text-[10px] text-gray-400 text-center mt-6">
-            绑定即代表您同意<span className="text-gray-600">《服务协议》</span>与<span className="text-gray-600">《隐私政策》</span>
-          </p>
+          <div className="flex items-center justify-center gap-2 mt-6">
+            <input 
+              type="checkbox" 
+              checked={agreed} 
+              onChange={(e) => { setAgreed(e.target.checked); setError(''); }}
+              className="w-3 h-3 text-[#07C160] rounded border-gray-300 focus:ring-[#07C160]"
+            />
+            <p className="text-[10px] text-gray-400 text-center">
+              我已阅读并同意<a href="#" className="text-[#07C160] hover:underline" onClick={(e) => { e.preventDefault(); alert('服务协议详细内容'); }}>《服务协议》</a>与<a href="#" className="text-[#07C160] hover:underline" onClick={(e) => { e.preventDefault(); alert('隐私政策详细内容'); }}>《隐私政策》</a>
+            </p>
+          </div>
         </div>
       </div>
     </div>
