@@ -3,6 +3,7 @@ import { useApp } from '../AppContext';
 import { NavBar, Card } from './ui';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from 'date-fns';
 import { Activity, Coffee, Scale } from 'lucide-react';
+import { formatDateTime } from '../lib/utils';
 
 export const CalendarView = () => {
   const { setCurrentView, exerciseRecords, dietRecords, weightRecords, user } = useApp();
@@ -130,8 +131,11 @@ export const CalendarView = () => {
             <div className="space-y-3">
               {dayExercises.map(ex => (
                 <div key={ex.id} className="border-b border-gray-100 last:border-0 pb-3 last:pb-0">
-                  <div className="flex justify-between mb-1">
-                    <span className="font-medium text-gray-900">{ex.type}</span>
+                  <div className="flex justify-between items-center mb-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-gray-900">{ex.type}</span>
+                      <span className="text-[10px] text-gray-500">{formatDateTime(ex.date)}</span>
+                    </div>
                     <span className="text-sm text-gray-500">{ex.duration} 分钟</span>
                   </div>
                   <div className="text-xs text-yellow-500 mb-1">强度: {'★'.repeat(ex.intensity)}</div>
@@ -158,10 +162,13 @@ export const CalendarView = () => {
             <div className="space-y-4">
               {dayDiets.map(diet => (
                 <div key={diet.id} className="border-b border-gray-100 last:border-0 pb-3 last:pb-0">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 font-medium">
-                      {diet.meal === 'breakfast' ? '早餐' : diet.meal === 'lunch' ? '午餐' : diet.meal === 'dinner' ? '晚餐' : '加餐'}
-                    </span>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 font-medium">
+                        {diet.meal === 'breakfast' ? '早餐' : diet.meal === 'lunch' ? '午餐' : diet.meal === 'dinner' ? '晚餐' : '加餐'}
+                      </span>
+                      <span className="text-[10px] text-gray-500">{formatDateTime(diet.date)}</span>
+                    </div>
                   </div>
                   <p className="text-sm text-gray-900 mb-2">{diet.description}</p>
                   {diet.photos && diet.photos.length > 0 && (

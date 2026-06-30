@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useApp } from '../AppContext';
 import { NavBar, Card, Button, Input } from './ui';
 import { Plus, X } from 'lucide-react';
+import { formatDateTime } from '../lib/utils';
 
 const EXERCISE_TYPES = ['跑步', '游泳', '力量训练', '瑜伽', '快走', '骑行', '其他'];
 
@@ -63,7 +64,7 @@ export const ExerciseView = () => {
     activities.forEach((a, index) => {
       addExerciseRecord({
         id: `ex_${Date.now()}_${index}`,
-        studentId: user?.id, date: format(new Date(), 'yyyy-MM-dd HH:mm'),
+        studentId: user?.id, date: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
         type: a.type === '其他' ? a.customType : a.type,
         duration: parseInt(a.duration),
         intensity: a.intensity,
@@ -203,7 +204,7 @@ export const ExerciseView = () => {
                 <Card key={record.id} className="p-0 overflow-hidden">
                   <div className="p-4 border-b border-gray-50">
                     <div className="flex justify-between items-center mb-3">
-                      <span className="text-xs text-gray-500 font-medium">{record.date}</span>
+                      <span className="text-xs text-gray-500 font-medium">{formatDateTime(record.date)}</span>
                       <span className="text-[10px] px-2 py-0.5 rounded text-[#07C160] bg-[#07C160]/10 font-bold uppercase">
                         {record.type}
                       </span>

@@ -42,7 +42,7 @@ const MOCK_DIET_RECORDS: DietRecord[] = [
   {
     id: 'd1',
     studentId: 's1', // 王大锤
-    date: new Date(Date.now() - 86400000).toISOString().split('T')[0] + ' 08:30', // yesterday
+    date: new Date(Date.now() - 86400000).toISOString().split('T')[0] + ' 08:30:00', // yesterday
     meal: 'breakfast',
     description: '燕麦粥一碗，白煮蛋两个，一杯牛奶',
     photos: [
@@ -54,7 +54,7 @@ const MOCK_DIET_RECORDS: DietRecord[] = [
   {
     id: 'd2',
     studentId: 's1', // 李小花
-    date: new Date(Date.now() - 86400000).toISOString().split('T')[0] + ' 12:15', // yesterday
+    date: new Date(Date.now() - 86400000).toISOString().split('T')[0] + ' 12:15:00', // yesterday
     meal: 'lunch',
     description: '香煎鸡胸肉沙拉，油醋汁',
     photos: [
@@ -66,7 +66,7 @@ const MOCK_DIET_RECORDS: DietRecord[] = [
   {
     id: 'd3',
     studentId: 's1', // 张伟
-    date: new Date().toISOString().split('T')[0] + ' 18:45', // today
+    date: new Date().toISOString().split('T')[0] + ' 18:45:00', // today
     meal: 'dinner',
     description: '清炒时蔬，糙米饭半碗',
     photos: ['https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80'],
@@ -75,7 +75,7 @@ const MOCK_DIET_RECORDS: DietRecord[] = [
   {
     id: 'd4',
     studentId: 's1',
-    date: new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0] + ' 09:00', // 2 days ago
+    date: new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0] + ' 09:00:00', // 2 days ago
     meal: 'breakfast',
     description: '紫薯一块，豆浆一杯，水煮蛋一个',
     photos: ['https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&q=80'],
@@ -84,7 +84,7 @@ const MOCK_DIET_RECORDS: DietRecord[] = [
   {
     id: 'd5',
     studentId: 's1',
-    date: new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0] + ' 13:20', // 2 days ago
+    date: new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0] + ' 13:20:00', // 2 days ago
     meal: 'lunch',
     description: '番茄牛腩，少油少盐，半碗杂粮饭',
     photos: ['https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=400&q=80'],
@@ -94,7 +94,7 @@ const MOCK_DIET_RECORDS: DietRecord[] = [
   {
     id: 'd6',
     studentId: 's2', // 王丽
-    date: new Date().toISOString().split('T')[0] + ' 07:30', // today
+    date: new Date().toISOString().split('T')[0] + ' 07:30:00', // today
     meal: 'breakfast',
     description: '全麦面包两片，无糖豆浆一杯，蓝莓一小把',
     photos: ['https://images.unsplash.com/photo-1525648199074-cee30ba79a4a?w=400&q=80'],
@@ -102,7 +102,7 @@ const MOCK_DIET_RECORDS: DietRecord[] = [
   {
     id: 'd7',
     studentId: 's2', // 王丽
-    date: new Date().toISOString().split('T')[0] + ' 12:40', // today
+    date: new Date().toISOString().split('T')[0] + ' 12:40:00', // today
     meal: 'lunch',
     description: '水煮虾10只，西兰花，藜麦饭半碗',
     photos: ['https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80'],
@@ -110,7 +110,7 @@ const MOCK_DIET_RECORDS: DietRecord[] = [
   {
     id: 'd8',
     studentId: 's3', // 张伟
-    date: new Date().toISOString().split('T')[0] + ' 08:15', // today
+    date: new Date().toISOString().split('T')[0] + ' 08:15:00', // today
     meal: 'breakfast',
     description: '包子两个，豆浆',
     photos: ['https://images.unsplash.com/photo-1517673132405-a56a62b18caf?w=400&q=80'],
@@ -118,7 +118,7 @@ const MOCK_DIET_RECORDS: DietRecord[] = [
   {
     id: 'd9',
     studentId: 's1',
-    date: new Date(Date.now() - 86400000 * 5).toISOString().split('T')[0] + ' 18:00', // 5 days ago
+    date: new Date(Date.now() - 86400000 * 5).toISOString().split('T')[0] + ' 18:00:00', // 5 days ago
     meal: 'dinner',
     description: '鸡胸肉沙拉',
     photos: ['https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=80'],
@@ -127,7 +127,7 @@ const MOCK_DIET_RECORDS: DietRecord[] = [
   {
     id: 'd10',
     studentId: 's1',
-    date: new Date(Date.now() - 86400000 * 4).toISOString().split('T')[0] + ' 12:00', // 4 days ago
+    date: new Date(Date.now() - 86400000 * 4).toISOString().split('T')[0] + ' 12:00:00', // 4 days ago
     meal: 'lunch',
     description: '紫薯、牛肉',
     photos: ['https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80'],
@@ -138,32 +138,32 @@ const MOCK_DIET_RECORDS: DietRecord[] = [
 const MOCK_WEIGHT_RECORDS: WeightRecord[] = [
   {
     id: 'w0_5',
-    date: new Date(Date.now() - 86400000 * 5).toISOString().split('T')[0] + ' 07:00',
+    date: new Date(Date.now() - 86400000 * 5).toISOString().split('T')[0] + ' 07:00:00',
     weight: 66.8,
   },
   {
     id: 'w0_4',
-    date: new Date(Date.now() - 86400000 * 4).toISOString().split('T')[0] + ' 07:10',
+    date: new Date(Date.now() - 86400000 * 4).toISOString().split('T')[0] + ' 07:10:00',
     weight: 66.3,
   },
   {
     id: 'w1',
-    date: new Date(Date.now() - 86400000 * 3).toISOString().split('T')[0] + ' 07:00', // 3 days ago
+    date: new Date(Date.now() - 86400000 * 3).toISOString().split('T')[0] + ' 07:00:00', // 3 days ago
     weight: 66.0,
   },
   {
     id: 'w1_2',
-    date: new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0] + ' 07:15', // 2 days ago
+    date: new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0] + ' 07:15:00', // 2 days ago
     weight: 65.5,
   },
   {
     id: 'w2',
-    date: new Date(Date.now() - 86400000).toISOString().split('T')[0] + ' 07:10', // yesterday
+    date: new Date(Date.now() - 86400000).toISOString().split('T')[0] + ' 07:10:00', // yesterday
     weight: 65.2,
   },
   {
     id: 'w3',
-    date: new Date().toISOString().split('T')[0] + ' 07:05', // today
+    date: new Date().toISOString().split('T')[0] + ' 07:05:00', // today
     weight: 65.0,
   }
 ];
@@ -172,7 +172,7 @@ const MOCK_EXERCISE_RECORDS: ExerciseRecord[] = [
   {
     id: 'e1_0',
     studentId: 's1',
-    date: new Date(Date.now() - 86400000 * 3).toISOString().split('T')[0] + ' 18:00',
+    date: new Date(Date.now() - 86400000 * 3).toISOString().split('T')[0] + ' 18:00:00',
     type: '游泳',
     duration: 60,
     intensity: 4,
@@ -181,7 +181,7 @@ const MOCK_EXERCISE_RECORDS: ExerciseRecord[] = [
   {
     id: 'e1',
     studentId: 's1',
-    date: new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0] + ' 18:30',
+    date: new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0] + ' 18:30:00',
     type: '跑步',
     duration: 30,
     intensity: 3,
@@ -194,7 +194,7 @@ const MOCK_EXERCISE_RECORDS: ExerciseRecord[] = [
   {
     id: 'e2',
     studentId: 's1',
-    date: new Date(Date.now() - 86400000).toISOString().split('T')[0] + ' 19:00',
+    date: new Date(Date.now() - 86400000).toISOString().split('T')[0] + ' 19:00:00',
     type: '力量训练',
     duration: 45,
     intensity: 5,
@@ -206,7 +206,7 @@ const MOCK_EXERCISE_RECORDS: ExerciseRecord[] = [
   {
     id: 'e3',
     studentId: 's1',
-    date: new Date().toISOString().split('T')[0] + ' 20:00',
+    date: new Date().toISOString().split('T')[0] + ' 20:00:00',
     type: '瑜伽',
     duration: 40,
     intensity: 2,
@@ -215,7 +215,7 @@ const MOCK_EXERCISE_RECORDS: ExerciseRecord[] = [
   {
     id: 'e4',
     studentId: 's2',
-    date: new Date().toISOString().split('T')[0] + ' 17:30',
+    date: new Date().toISOString().split('T')[0] + ' 17:30:00',
     type: '跑步',
     duration: 20,
     intensity: 3,

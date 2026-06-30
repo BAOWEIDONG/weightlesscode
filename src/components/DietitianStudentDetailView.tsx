@@ -4,6 +4,7 @@ import { NavBar, Card, Button, Input } from './ui';
 import { UserCircle, Coffee, MessageCircle, Stethoscope, ClipboardList, AlertCircle, FileText, Activity } from 'lucide-react';
 import { MOCK_STUDENTS } from '../AppContext';
 import { format } from 'date-fns';
+import { formatDateTime } from '../lib/utils';
 import { MOCK_MEDICAL_DATA, MedicalCategory } from './HealthProfileView';
 
 const MEAL_TYPES = [
@@ -63,7 +64,8 @@ export const DietitianStudentDetailView = () => {
     updateDietRecord(recordId, {
       dietitianComment: commentText,
       dietitianId: user?.id,
-      dietitianName: user?.name || '营养师'
+      dietitianName: user?.name || '营养师',
+      dietitianCommentDate: format(new Date(), 'yyyy-MM-dd HH:mm:ss')
     });
     setCommentingId(null);
     setCommentText('');
@@ -145,7 +147,7 @@ export const DietitianStudentDetailView = () => {
                 <Card key={record.id} className="p-0 overflow-hidden">
                   <div className="p-4 border-b border-gray-50">
                     <div className="flex justify-between items-center mb-3">
-                      <span className="text-xs text-gray-500 font-medium">{record.date}</span>
+                      <span className="text-xs text-gray-500 font-medium">{formatDateTime(record.date)}</span>
                       <span className="text-[10px] px-2 py-0.5 rounded text-[#FF976A] bg-[#FF976A]/10 font-bold uppercase">
                         {MEAL_TYPES.find(m => m.id === record.meal)?.label}
                       </span>
@@ -178,8 +180,11 @@ export const DietitianStudentDetailView = () => {
                       </div>
                     ) : record.dietitianComment ? (
                       <div className="relative group">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-bold text-[#FF976A]">您的批注</span>
+                          {record.dietitianCommentDate && (
+                            <span className="text-[10px] text-gray-500">{record.dietitianCommentDate}</span>
+                          )}
                         </div>
                         <p className="text-sm text-gray-700 whitespace-pre-wrap">
                           {record.dietitianComment}
@@ -224,7 +229,7 @@ export const DietitianStudentDetailView = () => {
                 <Card key={record.id} className="p-0 overflow-hidden">
                   <div className="p-4 border-b border-gray-50">
                     <div className="flex justify-between items-center mb-3">
-                      <span className="text-xs text-gray-500 font-medium">{record.date}</span>
+                      <span className="text-xs text-gray-500 font-medium">{formatDateTime(record.date)}</span>
                       <span className="text-[10px] px-2 py-0.5 rounded text-[#07C160] bg-[#07C160]/10 font-bold uppercase flex items-center gap-1">
                         <Activity className="w-3 h-3" />
                         {record.type}

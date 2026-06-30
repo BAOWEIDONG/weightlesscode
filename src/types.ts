@@ -39,6 +39,7 @@ export interface DietRecord {
   photos: string[];
   dietitianComment?: string;
   dietitianName?: string;
+  dietitianCommentDate?: string;
 }
 
 export interface CoachRecord {

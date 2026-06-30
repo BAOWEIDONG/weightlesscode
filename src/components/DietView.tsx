@@ -3,6 +3,7 @@ import { useApp } from '../AppContext';
 import { NavBar, Card, Button } from './ui';
 import { Camera, X } from 'lucide-react';
 import { format } from 'date-fns';
+import { formatDateTime } from '../lib/utils';
 
 const MEAL_TYPES = [
   { id: 'breakfast', label: '早餐' },
@@ -62,7 +63,7 @@ export const DietView = () => {
     addDietRecord({
       id: `diet_${Date.now()}`,
       studentId: user?.id || 's1',
-      date: format(new Date(), 'yyyy-MM-dd HH:mm'),
+      date: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
       meal: formData.meal as any,
       description: formData.description,
       photos: photos
@@ -194,7 +195,7 @@ export const DietView = () => {
                 <Card key={record.id} className="p-0 overflow-hidden">
                   <div className="p-4 border-b border-gray-50">
                     <div className="flex justify-between items-center mb-3">
-                      <span className="text-xs text-gray-500 font-medium">{record.date}</span>
+                      <span className="text-xs text-gray-500 font-medium">{formatDateTime(record.date)}</span>
                       <span className="text-[10px] px-2 py-0.5 rounded text-[#FF976A] bg-[#FF976A]/10 font-bold uppercase">
                         {MEAL_TYPES.find(m => m.id === record.meal)?.label}
                       </span>
@@ -212,10 +213,13 @@ export const DietView = () => {
                   {record.dietitianComment && (
                     <div className="bg-[#07C160]/5 p-4 relative">
                       <div className="absolute top-0 left-0 w-1 h-full bg-[#07C160]"></div>
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center justify-between mb-1">
                         <span className="text-xs font-bold text-[#07C160]">
                           {record.dietitianName || '营养师'} 批注
                         </span>
+                        {record.dietitianCommentDate && (
+                          <span className="text-[10px] text-gray-500">{record.dietitianCommentDate}</span>
+                        )}
                       </div>
                       <p className="text-sm text-gray-700 whitespace-pre-wrap">
                         {record.dietitianComment}
