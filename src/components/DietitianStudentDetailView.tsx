@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../AppContext';
 import { NavBar, Card, Button, Input } from './ui';
-import { UserCircle, Coffee, MessageCircle, Stethoscope, ClipboardList, AlertCircle, FileText } from 'lucide-react';
-import { MOCK_STUDENTS } from './CoachDashboardView';
+import { UserCircle, Coffee, MessageCircle, Stethoscope, ClipboardList, AlertCircle, FileText, Activity } from 'lucide-react';
+import { MOCK_STUDENTS } from '../AppContext';
 import { format } from 'date-fns';
 import { MOCK_MEDICAL_DATA, MedicalCategory } from './HealthProfileView';
 
@@ -14,10 +14,10 @@ const MEAL_TYPES = [
 ];
 
 export const DietitianStudentDetailView = () => {
-  const { setCurrentView, selectedStudentId, dietRecords, updateDietRecord, user } = useApp();
+  const { setCurrentView, selectedStudentId, dietRecords, exerciseRecords, updateDietRecord, user } = useApp();
   const student = MOCK_STUDENTS.find(s => s.id === selectedStudentId);
 
-  const [activeTab, setActiveTab] = useState<'diet' | 'medical' | 'questionnaire'>('diet');
+  const [activeTab, setActiveTab] = useState<'diet' | 'exercise' | 'medical' | 'questionnaire'>('diet');
 
   // For Diet tab
   const records = dietRecords
@@ -25,6 +25,11 @@ export const DietitianStudentDetailView = () => {
     .sort((a, b) => b.date.localeCompare(a.date));
   const [commentingId, setCommentingId] = useState<string | null>(null);
   const [commentText, setCommentText] = useState('');
+
+  // For Exercise tab
+  const studentExercises = exerciseRecords
+    .filter(r => r.studentId === selectedStudentId)
+    .sort((a, b) => b.date.localeCompare(a.date));
 
   // For Medical tab (Mock local state for editing)
   const [medicalData, setMedicalData] = useState<MedicalCategory[]>(JSON.parse(JSON.stringify(MOCK_MEDICAL_DATA)));
@@ -84,7 +89,7 @@ export const DietitianStudentDetailView = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-safe relative">
+    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-safe relative font-sans">
       <NavBar title={`${student.name} 的档案`} onBack={() => setCurrentView('dietitian-dashboard')} />
       
       <div className="bg-white px-4 pt-4 border-b border-gray-200 sticky top-14 z-10 space-y-4">
@@ -100,21 +105,27 @@ export const DietitianStudentDetailView = () => {
           </div>
         </Card>
 
-        <div className="flex gap-6">
+        <div className="flex gap-4 overflow-x-auto whitespace-nowrap pb-1 no-scrollbar">
           <button 
-            className={`py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'diet' ? 'border-[#07C160] text-[#07C160]' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
+            className={`py-3 text-sm font-bold border-b-2 transition-colors shrink-0 ${activeTab === 'diet' ? 'border-[#07C160] text-[#07C160]' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
             onClick={() => setActiveTab('diet')}
           >
             饮食打卡
           </button>
           <button 
-            className={`py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'medical' ? 'border-[#07C160] text-[#07C160]' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
+            className={`py-3 text-sm font-bold border-b-2 transition-colors shrink-0 ${activeTab === 'exercise' ? 'border-[#07C160] text-[#07C160]' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
+            onClick={() => setActiveTab('exercise')}
+          >
+            运动打卡
+          </button>
+          <button 
+            className={`py-3 text-sm font-bold border-b-2 transition-colors shrink-0 ${activeTab === 'medical' ? 'border-[#07C160] text-[#07C160]' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
             onClick={() => setActiveTab('medical')}
           >
             基础医疗
           </button>
           <button 
-            className={`py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'questionnaire' ? 'border-[#07C160] text-[#07C160]' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
+            className={`py-3 text-sm font-bold border-b-2 transition-colors shrink-0 ${activeTab === 'questionnaire' ? 'border-[#07C160] text-[#07C160]' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
             onClick={() => setActiveTab('questionnaire')}
           >
             自查问卷
@@ -194,6 +205,66 @@ export const DietitianStudentDetailView = () => {
                         <MessageCircle className="w-4 h-4" />
                         添加批注
                       </button>
+                    )}
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )
+        )}
+
+        {activeTab === 'exercise' && (
+          studentExercises.length === 0 ? (
+            <div className="text-center py-10 text-gray-400 text-sm bg-white rounded-2xl border border-gray-100">
+              暂无运动打卡记录
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {studentExercises.map(record => (
+                <Card key={record.id} className="p-0 overflow-hidden">
+                  <div className="p-4 border-b border-gray-50">
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="text-xs text-gray-500 font-medium">{record.date}</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded text-[#07C160] bg-[#07C160]/10 font-bold uppercase flex items-center gap-1">
+                        <Activity className="w-3 h-3" />
+                        {record.type}
+                      </span>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-3 mb-3 bg-gray-50 p-3 rounded-xl">
+                      <div>
+                        <div className="text-[10px] text-gray-500 mb-0.5">运动时长</div>
+                        <div className="text-sm font-bold text-gray-900">{record.duration} <span className="text-xs font-normal">分钟</span></div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-gray-500 mb-0.5">强度 (1-5)</div>
+                        <div className="text-sm font-bold text-gray-900 flex gap-1">
+                          {[1,2,3,4,5].map(v => (
+                            <div key={v} className={`w-2 h-3 rounded-full ${v <= record.intensity ? 'bg-[#07C160]' : 'bg-gray-200'}`} />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {record.notes && (
+                      <div className="mb-3">
+                        {record.type === '线下活动陪练' ? (
+                          <div className="p-3 bg-blue-50/50 rounded-lg border border-blue-100/50">
+                            <span className="text-xs font-bold text-blue-500 mb-1 block">教练打卡备注</span>
+                            <p className="text-sm text-gray-700 whitespace-pre-wrap">{record.notes}</p>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-gray-900 whitespace-pre-wrap">{record.notes}</p>
+                        )}
+                      </div>
+                    )}
+                    
+                    {record.photos && record.photos.length > 0 && (
+                      <div className="flex gap-2 overflow-x-auto pb-1">
+                        {record.photos.map((url, idx) => (
+                          <img key={idx} src={url} alt="运动" className="h-20 w-20 object-cover rounded-lg shrink-0 border border-gray-100" />
+                        ))}
+                      </div>
                     )}
                   </div>
                 </Card>

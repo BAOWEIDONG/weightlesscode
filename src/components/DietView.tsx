@@ -15,7 +15,8 @@ export const DietView = () => {
   const { setCurrentView, addDietRecord, dietRecords, user } = useApp();
   
   const todayStr = format(new Date(), 'yyyy-MM-dd');
-  const todayDiets = dietRecords.filter(r => r.date === todayStr);
+  const userDiets = dietRecords.filter(r => r.studentId === user?.id || !r.studentId);
+  const todayDiets = userDiets.filter(r => r.date.startsWith(todayStr));
   const uploadedMealIds = todayDiets.map(r => r.meal);
 
   const availableMeals = MEAL_TYPES.filter(m => !uploadedMealIds.includes(m.id as any));
@@ -61,7 +62,7 @@ export const DietView = () => {
     addDietRecord({
       id: `diet_${Date.now()}`,
       studentId: user?.id || 's1',
-      date: todayStr,
+      date: format(new Date(), 'yyyy-MM-dd HH:mm'),
       meal: formData.meal as any,
       description: formData.description,
       photos: photos
@@ -84,8 +85,8 @@ export const DietView = () => {
     }
   }, [uploadedMealIds, formData.meal]);
 
-  // Sort history by date desc
-  const history = [...dietRecords].sort((a, b) => b.date.localeCompare(a.date));
+  // Sort history by date desc (only today's records)
+  const history = [...todayDiets].sort((a, b) => b.date.localeCompare(a.date));
 
   return (
     <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-8">
@@ -201,9 +202,9 @@ export const DietView = () => {
                     
                     <p className="text-sm text-gray-900 mb-3 whitespace-pre-wrap">{record.description}</p>
                     
-                    <div className="flex gap-2 overflow-x-auto pb-1">
+                    <div className="flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                       {record.photos.map((url, idx) => (
-                        <img key={idx} src={url} alt="食物" className="h-20 w-20 object-cover rounded-lg shrink-0 border border-gray-100" />
+                        <img key={idx} src={url} alt="食物" className="h-20 w-20 object-cover rounded-lg shrink-0 snap-center border border-gray-100" />
                       ))}
                     </div>
                   </div>

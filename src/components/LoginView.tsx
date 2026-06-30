@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../AppContext';
 import { Button, Input, NavBar } from './ui';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, UserCircle, Dumbbell, Leaf } from 'lucide-react';
 
 export const LoginView = () => {
   const { setUser, setCurrentView } = useApp();
@@ -24,9 +24,9 @@ export const LoginView = () => {
     if (phone.length === 11 && code.length === 6) {
       setError('');
       setUser({
-        id: `usr_${Date.now()}`,
+        id: role === 'student' ? 's1' : `usr_${Date.now()}`,
         role,
-        name: '',
+        name: role === 'student' ? '李明' : (role === 'coach' ? '李教练' : '王营养师'),
         phone,
       });
       if (role === 'coach') {
@@ -55,19 +55,40 @@ export const LoginView = () => {
           </div>
           
           <div className="w-full space-y-4">
-            <div className="flex justify-center space-x-4 mb-6">
-              <label className="flex items-center space-x-2 text-sm">
-                <input type="radio" checked={role === 'student'} onChange={() => setRole('student')} className="text-[#07C160]" />
-                <span>我是学员</span>
-              </label>
-              <label className="flex items-center space-x-2 text-sm">
-                <input type="radio" checked={role === 'coach'} onChange={() => setRole('coach')} className="text-[#07C160]" />
-                <span>我是教练</span>
-              </label>
-              <label className="flex items-center space-x-2 text-sm">
-                <input type="radio" checked={role === 'dietitian'} onChange={() => setRole('dietitian')} className="text-[#07C160]" />
-                <span>我是营养师</span>
-              </label>
+            <div className="grid grid-cols-3 gap-3 mb-8">
+              <button
+                onClick={() => setRole('student')}
+                className={`flex flex-col items-center justify-center py-4 rounded-2xl border-2 transition-all ${
+                  role === 'student' ? 'border-[#07C160] bg-[#07C160]/5' : 'border-gray-100 bg-white hover:border-[#07C160]/30'
+                }`}
+              >
+                <div className={`p-2 rounded-full mb-2 ${role === 'student' ? 'bg-[#07C160] text-white' : 'bg-gray-100 text-gray-500'}`}>
+                  <UserCircle className="w-6 h-6" />
+                </div>
+                <span className={`text-sm font-bold ${role === 'student' ? 'text-[#07C160]' : 'text-gray-600'}`}>学员</span>
+              </button>
+              <button
+                onClick={() => setRole('coach')}
+                className={`flex flex-col items-center justify-center py-4 rounded-2xl border-2 transition-all ${
+                  role === 'coach' ? 'border-[#FF976A] bg-[#FF976A]/5' : 'border-gray-100 bg-white hover:border-[#FF976A]/30'
+                }`}
+              >
+                <div className={`p-2 rounded-full mb-2 ${role === 'coach' ? 'bg-[#FF976A] text-white' : 'bg-gray-100 text-gray-500'}`}>
+                  <Dumbbell className="w-6 h-6" />
+                </div>
+                <span className={`text-sm font-bold ${role === 'coach' ? 'text-[#FF976A]' : 'text-gray-600'}`}>教练</span>
+              </button>
+              <button
+                onClick={() => setRole('dietitian')}
+                className={`flex flex-col items-center justify-center py-4 rounded-2xl border-2 transition-all ${
+                  role === 'dietitian' ? 'border-[#1677FF] bg-[#1677FF]/5' : 'border-gray-100 bg-white hover:border-[#1677FF]/30'
+                }`}
+              >
+                <div className={`p-2 rounded-full mb-2 ${role === 'dietitian' ? 'bg-[#1677FF] text-white' : 'bg-gray-100 text-gray-500'}`}>
+                  <Leaf className="w-6 h-6" />
+                </div>
+                <span className={`text-sm font-bold ${role === 'dietitian' ? 'text-[#1677FF]' : 'text-gray-600'}`}>营养师</span>
+              </button>
             </div>
 
             <Button className="w-full flex items-center gap-2" size="lg" onClick={handleWeChatLogin}>

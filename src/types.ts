@@ -20,6 +20,7 @@ export interface WeightRecord {
 
 export interface ExerciseRecord {
   id: string;
+  studentId?: string;
   date: string;
   type: string;
   duration: number;
@@ -48,13 +49,11 @@ export interface CoachRecord {
   photos: string[];
 }
 
-export interface VideoRecord {
+export interface CoachActivityRecord {
   id: string;
   title: string;
-  description?: string;
-  videoUrl: string;
-  coverUrl: string;
+  description: string;
+  imageUrls: string[];
   coachName: string;
-  uploadTime: string;
-  targetStudents?: string[]; // 'all' or list of ids
+  date: string;
 }

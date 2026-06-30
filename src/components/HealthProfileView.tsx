@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useApp } from '../AppContext';
-import { NavBar, Card, Button } from './ui';
-import { FileDown, Activity, Heart, FileText, ClipboardList, Stethoscope, AlertCircle, UploadCloud } from 'lucide-react';
+import { NavBar, Card } from './ui';
+import { Activity, FileText, ClipboardList, Stethoscope, UploadCloud } from 'lucide-react';
 
 type Indicator = {
   name: string;
@@ -81,13 +81,10 @@ export const MOCK_MEDICAL_DATA: MedicalCategory[] = [
 ];
 
 export const HealthProfileView = () => {
-  const { user, setCurrentView, questionnaireAnswered } = useApp();
+  const { setCurrentView, questionnaireAnswered } = useApp();
   const [qData, setQData] = useState<any>(null);
-  
-  const [activeTab, setActiveTab] = useState<'questionnaire' | 'medical'>('medical');
 
   useEffect(() => {
-    // Try to load questionnaire data
     const saved = localStorage.getItem('submitted_questionnaire') || localStorage.getItem('draft_questionnaire');
     if (saved) {
       try {
@@ -106,142 +103,115 @@ export const HealthProfileView = () => {
   };
 
   const handleUploadReport = () => {
-    // Simulate report upload
     alert('模拟上传体检报告功能，实际会弹出文件选择器。');
   };
 
   return (
-    <div className="flex h-screen flex-col bg-[#F7F8FA] pb-20 overflow-y-auto">
+    <div className="flex h-screen flex-col bg-[#F7F8FA] pb-20 overflow-y-auto font-sans">
       <NavBar title="健康档案" onBack={() => setCurrentView('dashboard')} right={
         <div className="flex items-center gap-1">
-          {activeTab === 'medical' && (
-            <button className="text-[#07C160] hover:bg-green-50 p-2 rounded-full transition-colors" onClick={handleUploadReport}>
-              <UploadCloud className="h-5 w-5" />
-            </button>
-          )}
+          <button className="text-[#07C160] hover:bg-green-50 p-2 rounded-full transition-colors" onClick={handleUploadReport}>
+            <UploadCloud className="h-5 w-5" />
+          </button>
         </div>
       } />
       
-      <div className="bg-white px-4 border-b border-gray-200 sticky top-14 z-10">
-        <div className="flex gap-6">
-          <button 
-            className={`py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'medical' ? 'border-[#07C160] text-[#07C160]' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
-            onClick={() => setActiveTab('medical')}
-          >
-            基础医疗数据
-          </button>
-          <button 
-            className={`py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'questionnaire' ? 'border-[#07C160] text-[#07C160]' : 'border-transparent text-gray-500 hover:text-gray-900'}`}
-            onClick={() => setActiveTab('questionnaire')}
-          >
-            自查问卷信息
-          </button>
-        </div>
-      </div>
-
       <div className="p-4 space-y-4">
-        {activeTab === 'questionnaire' && (
-          <div className="space-y-4">
-            {!qData && !questionnaireAnswered ? (
-              <Card className="text-center py-10 text-gray-500 text-sm">
-                尚未完成自查问卷
-              </Card>
-            ) : (
-              <>
-                <Card>
-                  <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2 border-b pb-2">
-                    <ClipboardList className="h-4 w-4 text-[#07C160]" />
-                    基础与健康信息
-                  </h3>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">身高</span><span className="text-gray-900">{qData?.height || '--'} cm</span></div>
-                    <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">体重</span><span className="text-gray-900">{qData?.weight || '--'} kg</span></div>
-                    <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">疾病史/慢性疾病</span><span className="text-gray-900">{qData?.hasChronic === '有' ? qData.chronicDetails : '无'}</span></div>
-                    <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">特殊饮食</span><span className="text-gray-900">{qData?.hasSpecialDiet === '有' ? qData.specialDietDetails : '无'}</span></div>
-                    <div className="flex justify-between"><span className="text-gray-500">过敏史/食物过敏</span><span className="text-gray-900">{qData?.hasFoodAllergy === '有' ? qData.foodAllergyDetails : '无'}</span></div>
-                  </div>
-                </Card>
-                <Card>
-                  <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2 border-b pb-2">
-                    <Activity className="h-4 w-4 text-[#07C160]" />
-                    生活与运动习惯
-                  </h3>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">作息时间</span><span className="text-gray-900">{qData?.sleepTime || '--'} - {qData?.wakeTime || '--'} ({qData?.sleepDuration || '--'}h)</span></div>
-                    <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">饮酒/吸烟</span><span className="text-gray-900">{qData?.drinkAlcohol || '--'} / {qData?.smoke || '--'}</span></div>
-                    <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">经常吃零食</span><span className="text-gray-900">{qData?.snack || '--'}</span></div>
-                    <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">日饮水量</span><span className="text-gray-900">{qData?.dailyWater || '--'} ml</span></div>
-                    <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">每周运动</span><span className="text-gray-900">{qData?.exerciseFrequency || '--'}次 (每次{qData?.exerciseDuration || '--'}分钟)</span></div>
-                    <div className="flex justify-between"><span className="text-gray-500">运动类型</span><span className="text-gray-900 text-right">{(qData?.exerciseTypes || []).join(', ') || '--'}</span></div>
-                  </div>
-                </Card>
-              </>
-            )}
-          </div>
+        {!qData && !questionnaireAnswered ? (
+          <Card className="text-center py-10 text-gray-500 text-sm">
+            尚未完成自查问卷
+          </Card>
+        ) : (
+          <>
+            <Card>
+              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2 border-b pb-2">
+                <ClipboardList className="h-4 w-4 text-[#07C160]" />
+                基础与健康信息
+              </h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">身高</span><span className="text-gray-900">{qData?.height || '--'} cm</span></div>
+                <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">体重</span><span className="text-gray-900">{qData?.weight || '--'} kg</span></div>
+                <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">疾病史/慢性疾病</span><span className="text-gray-900">{qData?.hasChronic === '有' ? qData.chronicDetails : '无'}</span></div>
+                <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">特殊饮食</span><span className="text-gray-900">{qData?.hasSpecialDiet === '有' ? qData.specialDietDetails : '无'}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">过敏史/食物过敏</span><span className="text-gray-900">{qData?.hasFoodAllergy === '有' ? qData.foodAllergyDetails : '无'}</span></div>
+              </div>
+            </Card>
+            
+            <Card>
+              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2 border-b pb-2">
+                <Activity className="h-4 w-4 text-[#07C160]" />
+                生活与运动习惯
+              </h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">作息时间</span><span className="text-gray-900">{qData?.sleepTime || '--'} - {qData?.wakeTime || '--'} ({qData?.sleepDuration || '--'}h)</span></div>
+                <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">饮酒/吸烟</span><span className="text-gray-900">{qData?.drinkAlcohol || '--'} / {qData?.smoke || '--'}</span></div>
+                <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">经常吃零食</span><span className="text-gray-900">{qData?.snack || '--'}</span></div>
+                <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">日饮水量</span><span className="text-gray-900">{qData?.dailyWater || '--'} ml</span></div>
+                <div className="flex justify-between border-b border-gray-50 pb-2"><span className="text-gray-500">每周运动</span><span className="text-gray-900">{qData?.exerciseFrequency || '--'}次 (每次{qData?.exerciseDuration || '--'}分钟)</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">运动类型</span><span className="text-gray-900 text-right">{(qData?.exerciseTypes || []).join(', ') || '--'}</span></div>
+              </div>
+            </Card>
+          </>
         )}
 
-        {activeTab === 'medical' && (
-          <div className="space-y-4">
-            <Card className="bg-orange-50 border-orange-100">
-              <p className="text-xs text-orange-800">
-                提示：这部分数据在客户结营完成后进行更新。橙色字体表示该指标超出医学参考范围。结营后数据若为空，显示为“待更新”；若报告中未包含该项，显示为“未检测”。
-              </p>
-            </Card>
+        <Card className="bg-orange-50 border-orange-100">
+          <p className="text-xs text-orange-800">
+            提示：以下数据在客户结营完成后进行更新。橙色字体表示该指标超出医学参考范围。结营后数据若为空，显示为“待更新”；若报告中未包含该项，显示为“未检测”。
+          </p>
+        </Card>
 
-            {MOCK_MEDICAL_DATA.map((cat, idx) => (
-              <Card key={idx} className="p-0 overflow-hidden">
-                <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center gap-2">
-                  <Stethoscope className="w-4 h-4 text-[#1677FF]" />
-                  <h3 className="font-bold text-gray-900 text-sm">{cat.title}</h3>
-                </div>
-                <div className="divide-y divide-gray-100">
-                  {cat.items.map((item, iIdx) => (
-                    <div key={iIdx} className="p-4">
-                      <div className="flex justify-between items-center mb-3">
-                        <div className="font-medium text-gray-900 text-sm">{item.name}</div>
-                        <div className="text-[10px] text-gray-400 bg-gray-50 px-2 py-0.5 rounded">
-                          参考: {item.normalRange} {item.unit}
-                        </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-gray-50 p-2 rounded flex flex-col justify-center items-center">
-                          <span className="text-[10px] text-gray-500 mb-1">开营前</span>
-                          <div className="text-sm">
-                            {renderValue(item.beforeValue, item.isBeforeOut, false)}
-                            {item.beforeValue !== null && item.beforeValue !== undefined && item.beforeValue !== '' && item.unit && (
-                              <span className="text-[10px] text-gray-500 ml-1">{item.unit}</span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="bg-[#07C160]/5 p-2 rounded flex flex-col justify-center items-center border border-[#07C160]/10">
-                          <span className="text-[10px] text-[#07C160] font-medium mb-1">结营后</span>
-                          <div className="text-sm">
-                            {renderValue(item.afterValue, item.isAfterOut, true)}
-                            {item.afterValue !== null && item.afterValue !== undefined && item.afterValue !== '' && item.unit && (
-                              <span className="text-[10px] text-gray-500 ml-1">{item.unit}</span>
-                            )}
-                          </div>
-                        </div>
+        {MOCK_MEDICAL_DATA.map((cat, idx) => (
+          <Card key={idx} className="p-0 overflow-hidden shadow-sm border border-gray-100">
+            <div className="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+              <Stethoscope className="w-4 h-4 text-[#1677FF]" />
+              <h3 className="font-bold text-gray-900 text-sm">{cat.title}</h3>
+            </div>
+            <div className="divide-y divide-gray-50">
+              {cat.items.map((item, iIdx) => (
+                <div key={iIdx} className="p-4">
+                  <div className="flex justify-between items-center mb-3">
+                    <div className="font-bold text-gray-900 text-sm">{item.name}</div>
+                    <div className="text-[10px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded font-medium tracking-wide">
+                      参考: {item.normalRange} {item.unit}
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-gray-50 p-2 rounded-lg flex flex-col justify-center items-center">
+                      <span className="text-[10px] text-gray-500 mb-1 font-medium">开营前</span>
+                      <div className="text-sm">
+                        {renderValue(item.beforeValue, item.isBeforeOut, false)}
+                        {item.beforeValue !== null && item.beforeValue !== undefined && item.beforeValue !== '' && item.unit && (
+                          <span className="text-[10px] text-gray-500 ml-1">{item.unit}</span>
+                        )}
                       </div>
                     </div>
-                  ))}
+                    <div className="bg-[#07C160]/5 p-2 rounded-lg flex flex-col justify-center items-center border border-[#07C160]/10">
+                      <span className="text-[10px] text-[#07C160] font-bold mb-1">结营后</span>
+                      <div className="text-sm">
+                        {renderValue(item.afterValue, item.isAfterOut, true)}
+                        {item.afterValue !== null && item.afterValue !== undefined && item.afterValue !== '' && item.unit && (
+                          <span className="text-[10px] text-gray-500 ml-1">{item.unit}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </Card>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          </Card>
+        ))}
       </div>
       
       {/* Bottom Nav Placeholder */}
       <div className="fixed bottom-0 left-0 right-0 h-[72px] bg-white border-t border-gray-100 flex items-center justify-around pb-safe z-50">
-        <button className="flex flex-col items-center gap-1 w-full h-full text-gray-500 hover:text-gray-700 pt-3" onClick={() => setCurrentView('dashboard')}>
+        <button className="flex flex-col items-center gap-1 w-full h-full text-gray-400 hover:text-gray-700 pt-3 transition-colors" onClick={() => setCurrentView('dashboard')}>
           <Activity className="h-6 w-6" />
-          <span className="text-[9px] font-bold">首页</span>
+          <span className="text-[9px] font-bold tracking-wider">首页</span>
         </button>
         <button className="flex flex-col items-center gap-1 w-full h-full text-[#07C160] pt-3">
           <FileText className="h-6 w-6" />
-          <span className="text-[9px] font-bold">档案</span>
+          <span className="text-[9px] font-bold tracking-wider">档案</span>
         </button>
       </div>
     </div>

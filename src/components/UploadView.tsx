@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import React, { useState } from 'react';
 import { useApp } from '../AppContext';
 import { Button, Input, NavBar, Card } from './ui';
@@ -45,7 +46,7 @@ export const UploadView = () => {
     // Save weight
     addWeightRecord({
       id: `w_${Date.now()}`,
-      date: new Date().toISOString().split('T')[0],
+      date: format(new Date(), 'yyyy-MM-dd HH:mm'),
       weight: w,
     });
     

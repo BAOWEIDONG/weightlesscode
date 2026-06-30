@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../AppContext';
 import { NavBar, Button, Card } from './ui';
 import { Scale } from 'lucide-react';
+import { format } from 'date-fns';
 
 export const WeightCheckinView = () => {
   const { setCurrentView, addWeightRecord, weightRecords } = useApp();
@@ -24,7 +25,7 @@ export const WeightCheckinView = () => {
     setError('');
     addWeightRecord({
       id: `w_${Date.now()}`,
-      date: new Date().toISOString().split('T')[0],
+      date: format(new Date(), 'yyyy-MM-dd HH:mm'),
       weight: parseFloat(val.toFixed(1))
     });
     

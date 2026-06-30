@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { useApp } from '../AppContext';
+import { useApp, MOCK_STUDENTS } from '../AppContext';
 import { NavBar, Card, Button } from './ui';
 import { Camera, X, UserCircle } from 'lucide-react';
-import { MOCK_STUDENTS } from './CoachDashboardView';
 import { format } from 'date-fns';
 
 export const CoachRecordView = () => {

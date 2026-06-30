@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../AppContext';
 import { NavBar, Card } from './ui';
 import { Download } from 'lucide-react';
-import { MOCK_STUDENTS } from './CoachDashboardView';
+import { MOCK_STUDENTS } from '../AppContext';
 
 // Helper to define indicator directions
 const INDICATORS = [

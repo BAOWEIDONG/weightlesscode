@@ -2,7 +2,7 @@ import React from 'react';
 import { useApp } from '../AppContext';
 import { NavBar, Card } from './ui';
 import { UserCircle, Coffee, Clock } from 'lucide-react';
-import { MOCK_STUDENTS } from './CoachDashboardView';
+import { MOCK_STUDENTS } from '../AppContext';
 
 const MEAL_TYPES = [
   { id: 'breakfast', label: '早餐' },
