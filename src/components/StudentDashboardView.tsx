@@ -5,7 +5,7 @@ import { Activity, Coffee, Calendar, FileText, UserCircle, Scale, PlayCircle, Lo
 
 export const StudentDashboardView = () => {
   const { user, setCurrentView, weightRecords } = useApp();
-  const latestWeight = weightRecords.length > 0 ? weightRecords[weightRecords.length - 1].weight : '--';
+  const latestWeight = weightRecords.length > 0 ? weightRecords[weightRecords.length - 1].weight : (user?.weight || '--');
 
   return (
     <div className="flex h-screen flex-col bg-[#F4F6F8] pb-20 overflow-y-auto font-sans relative">
