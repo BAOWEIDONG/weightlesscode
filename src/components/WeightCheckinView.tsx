@@ -5,15 +5,17 @@ import { Scale } from 'lucide-react';
 import { format } from 'date-fns';
 
 export const WeightCheckinView = () => {
-  const { setCurrentView, addWeightRecord, weightRecords } = useApp();
+  const { setCurrentView, addWeightRecord, weightRecords, user } = useApp();
   const [weight, setWeight] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (weightRecords.length > 0) {
       setWeight(weightRecords[weightRecords.length - 1].weight.toString());
+    } else if (user?.weight) {
+      setWeight(user.weight.toString());
     }
-  }, [weightRecords]);
+  }, [weightRecords, user]);
 
   const handleSubmit = () => {
     const val = parseFloat(weight);

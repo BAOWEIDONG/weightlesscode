@@ -8,6 +8,7 @@ export interface User {
   gender?: 'male' | 'female';
   age?: number;
   height?: number;
+  weight?: number;
   medicalHistory?: string;
   allergies?: string;
 }
