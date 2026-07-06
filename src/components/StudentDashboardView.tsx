@@ -5,10 +5,10 @@ import { Activity, Coffee, Calendar, FileText, UserCircle, Scale, PlayCircle, Lo
 
 export const StudentDashboardView = () => {
   const { user, setCurrentView, weightRecords } = useApp();
-  const latestWeight = weightRecords.length > 0 ? weightRecords[weightRecords.length - 1].weight : (user?.weight || '--');
+  const latestWeight = weightRecords.length > 0 ? weightRecords[weightRecords.length - 1].weight : '--';
 
   return (
-    <div className="flex h-full flex-col bg-[#F4F6F8] pb-20 overflow-y-auto font-sans relative">
+    <div className="flex h-screen flex-col bg-[#F4F6F8] pb-20 overflow-y-auto font-sans relative">
       {/* Dynamic Background Header */}
       <div className="relative pt-12 px-6 pb-20 bg-gradient-to-br from-[#07C160] to-[#04a551] rounded-b-[40px] shadow-lg overflow-hidden">
         {/* Abstract shapes for sporty background */}

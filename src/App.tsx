@@ -53,7 +53,7 @@ const AppContent = () => {
 export default function App() {
   return (
     <AppProvider>
-      <div className="w-full h-[100dvh] max-w-md mx-auto overflow-hidden bg-[#F7F8FA] font-sans text-gray-700 sm:shadow-2xl sm:border-x sm:border-gray-100 relative">
+      <div className="mx-auto max-w-md h-screen overflow-hidden bg-[#F7F8FA] font-sans text-gray-700 shadow-2xl sm:border-x sm:border-gray-100 relative">
         <AppContent />
       </div>
     </AppProvider>

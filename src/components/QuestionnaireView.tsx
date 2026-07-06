@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../AppContext';
 import { Button, NavBar, Card } from './ui';
 import { UploadCloud, FileText, X } from 'lucide-react';
-import { format } from 'date-fns';
 
 const EXERCISE_OPTIONS = ['跑步', '快走', '游泳', '骑行', '力量训练', '瑜伽', '球类', '跳绳', '其他'];
 
 export const QuestionnaireView = () => {
-  const { user, setUser, setQuestionnaireAnswered, setCurrentView, addWeightRecord } = useApp();
+  const { user, setUser, setQuestionnaireAnswered, setCurrentView } = useApp();
   
   // 1: 基础信息, 2: 健康与体检, 3: 生活习惯, 4: 运动与活动, 5: 医疗报告上传
   const [step, setStep] = useState(1);
@@ -124,17 +123,8 @@ export const QuestionnaireView = () => {
         gender: formData.gender as 'male' | 'female',
         age: parseInt(formData.age),
         height: parseFloat(formData.height),
-        weight: parseFloat(formData.weight),
-        medicalReports: formData.medicalReports
       });
     }
-
-    addWeightRecord({
-      id: `w_${Date.now()}`,
-      date: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
-      weight: parseFloat(formData.weight)
-    });
-
     localStorage.setItem('submitted_questionnaire', JSON.stringify(formData));
     localStorage.removeItem('draft_questionnaire'); // clear draft
     setQuestionnaireAnswered(true);
@@ -168,7 +158,7 @@ export const QuestionnaireView = () => {
   const steps = ['基础信息', '健康体检', '生活习惯', '运动活动', '报告上传'];
 
   return (
-    <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-safe relative">
+    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-safe relative">
       <NavBar title="自查问卷" />
       
       <div className="p-4 flex-1 flex flex-col space-y-4">

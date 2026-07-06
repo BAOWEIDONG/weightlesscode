@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../AppContext';
 import { Button, Input, NavBar } from './ui';
-import { MessageCircle, UserCircle, Dumbbell, Leaf, Activity } from 'lucide-react';
+import { MessageCircle, UserCircle, Dumbbell, Leaf } from 'lucide-react';
 
 export const LoginView = () => {
   const { setUser, setCurrentView } = useApp();
@@ -9,7 +9,6 @@ export const LoginView = () => {
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
   const [role, setRole] = useState<'student' | 'coach' | 'dietitian'>('student');
-  const [agreed, setAgreed] = useState(false);
 
   const [error, setError] = useState('');
 
@@ -22,10 +21,6 @@ export const LoginView = () => {
   };
 
   const handlePhoneSubmit = () => {
-    if (!agreed) {
-      setError('请先勾选同意《服务协议》与《隐私政策》');
-      return;
-    }
     if (phone.length === 11 && code.length === 6) {
       setError('');
       setUser({
@@ -48,15 +43,15 @@ export const LoginView = () => {
 
   if (step === 1) {
     return (
-      <div className="flex h-full flex-col bg-[#F7F8FA]">
+      <div className="flex h-screen flex-col bg-[#F7F8FA]">
         <NavBar title="授权登录" />
         <div className="flex flex-1 flex-col items-center justify-center p-6 space-y-12">
           <div className="flex flex-col items-center space-y-4">
             <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-[#07C160]">
-              <Activity className="h-12 w-12 text-white" />
+              <MessageCircle className="h-12 w-12 text-white" />
             </div>
             <h1 className="text-2xl font-semibold text-gray-900">28天轻体减重</h1>
-            <p className="text-gray-500 text-center text-sm px-4">科学减脂，专业指导，开启你的28天健康蜕变之旅</p>
+            <p className="text-gray-500 text-center text-sm">授权获取您的微信头像和昵称</p>
           </div>
           
           <div className="w-full space-y-4">
@@ -98,7 +93,7 @@ export const LoginView = () => {
 
             <Button className="w-full flex items-center gap-2" size="lg" onClick={handleWeChatLogin}>
               <MessageCircle className="h-5 w-5" />
-              登录/注册
+              微信一键登录
             </Button>
           </div>
         </div>
@@ -152,17 +147,9 @@ export const LoginView = () => {
           <Button className="w-full h-12 text-base font-medium rounded-full shadow-lg shadow-[#07C160]/20" onClick={handlePhoneSubmit}>
             确认绑定
           </Button>
-          <div className="flex items-center justify-center gap-2 mt-6">
-            <input 
-              type="checkbox" 
-              checked={agreed} 
-              onChange={(e) => { setAgreed(e.target.checked); setError(''); }}
-              className="w-3 h-3 text-[#07C160] rounded border-gray-300 focus:ring-[#07C160]"
-            />
-            <p className="text-[10px] text-gray-400 text-center">
-              我已阅读并同意<a href="#" className="text-[#07C160] hover:underline" onClick={(e) => { e.preventDefault(); alert('服务协议详细内容'); }}>《服务协议》</a>与<a href="#" className="text-[#07C160] hover:underline" onClick={(e) => { e.preventDefault(); alert('隐私政策详细内容'); }}>《隐私政策》</a>
-            </p>
-          </div>
+          <p className="text-[10px] text-gray-400 text-center mt-6">
+            绑定即代表您同意<span className="text-gray-600">《服务协议》</span>与<span className="text-gray-600">《隐私政策》</span>
+          </p>
         </div>
       </div>
     </div>

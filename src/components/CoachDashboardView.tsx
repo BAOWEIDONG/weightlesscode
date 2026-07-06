@@ -7,7 +7,7 @@ export const CoachDashboardView = () => {
   const { user, setCurrentView, coachActivities } = useApp();
 
   return (
-    <div className="flex h-full flex-col bg-white overflow-y-auto pb-20 font-sans">
+    <div className="flex h-screen flex-col bg-white overflow-y-auto pb-20 font-sans">
       <div className="pt-12 px-6 pb-4 bg-gradient-to-b from-[#07C160]/10 to-white border-b border-gray-100">
         <div className="flex justify-end mb-2">
           <button onClick={() => setCurrentView('login')} className="text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1 text-xs">

@@ -65,7 +65,7 @@ export const CampStatsView = () => {
   };
 
   return (
-    <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-safe">
+    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-safe">
       <NavBar title="结营数据统计" onBack={() => setCurrentView('coach-dashboard')} right={
         <button className="p-2 text-gray-500 hover:text-gray-900" onClick={() => alert('数据已导出')}>
           <Download className="w-5 h-5" />

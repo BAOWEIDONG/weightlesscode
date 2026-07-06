@@ -33,7 +33,7 @@ export const CalendarView = () => {
   const dayWeights = weightRecords.filter(r => r.date.startsWith(selectedDateStr));
 
   return (
-    <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-8">
+    <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-8">
       <NavBar title="打卡记录" onBack={() => setCurrentView('dashboard')} />
       
       <div className="p-4 space-y-4">

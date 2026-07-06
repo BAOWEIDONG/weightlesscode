@@ -107,7 +107,7 @@ export const HealthProfileView = () => {
   };
 
   return (
-    <div className="flex h-full flex-col bg-[#F7F8FA] pb-20 overflow-y-auto font-sans">
+    <div className="flex h-screen flex-col bg-[#F7F8FA] pb-20 overflow-y-auto font-sans">
       <NavBar title="健康档案" onBack={() => setCurrentView('dashboard')} right={
         <div className="flex items-center gap-1">
           <button className="text-[#07C160] hover:bg-green-50 p-2 rounded-full transition-colors" onClick={handleUploadReport}>
@@ -201,26 +201,6 @@ export const HealthProfileView = () => {
             </div>
           </Card>
         ))}
-
-        {qData?.medicalReports && qData.medicalReports.length > 0 && (
-          <Card>
-            <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2 border-b pb-2">
-              <FileText className="h-4 w-4 text-[#07C160]" />
-              个人医疗报告
-            </h3>
-            <div className="grid grid-cols-2 gap-3">
-              {qData.medicalReports.map((url: string, idx: number) => (
-                <div key={idx} className="relative rounded-lg overflow-hidden border border-gray-100 shadow-sm aspect-[3/4]">
-                  <img src={url} alt={`报告 ${idx + 1}`} className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" onClick={() => window.open(url, '_blank')} />
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm text-white text-[10px] p-1.5 text-center truncate">
-                    报告 {idx + 1}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        )}
-
       </div>
       
       {/* Bottom Nav Placeholder */}
