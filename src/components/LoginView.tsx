@@ -55,7 +55,7 @@ export const LoginView = () => {
             <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-[#07C160]">
               <Activity className="h-12 w-12 text-white" />
             </div>
-            <h1 className="text-2xl font-semibold text-gray-900">28天轻体减重</h1>
+            <h1 className="text-2xl font-semibold text-gray-900">28天营养减重</h1>
             <p className="text-gray-500 text-center text-sm px-4">科学减脂，专业指导，开启你的28天健康蜕变之旅</p>
           </div>
           

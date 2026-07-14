@@ -15,7 +15,7 @@ const MEAL_TYPES = [
 ];
 
 export const DietitianStudentDetailView = () => {
-  const { setCurrentView, selectedStudentId, dietRecords, exerciseRecords, updateDietRecord, user } = useApp();
+  const { setCurrentView, goBack, selectedStudentId, dietRecords, exerciseRecords, updateDietRecord, user } = useApp();
   const student = MOCK_STUDENTS.find(s => s.id === selectedStudentId);
 
   const [activeTab, setActiveTab] = useState<'diet' | 'exercise' | 'medical' | 'questionnaire'>('diet');
@@ -26,6 +26,7 @@ export const DietitianStudentDetailView = () => {
     .sort((a, b) => b.date.localeCompare(a.date));
   const [commentingId, setCommentingId] = useState<string | null>(null);
   const [commentText, setCommentText] = useState('');
+  const [commentScore, setCommentScore] = useState<-1 | 0 | 1>(1);
 
   // For Exercise tab
   const studentExercises = exerciseRecords
@@ -52,7 +53,7 @@ export const DietitianStudentDetailView = () => {
   if (!student) {
     return (
       <div className="flex h-full flex-col bg-[#F7F8FA] pb-safe">
-        <NavBar title="学员详情" onBack={() => setCurrentView('dietitian-dashboard')} />
+        <NavBar title="学员详情" onBack={goBack} />
         <div className="flex-1 flex items-center justify-center text-gray-500 text-sm">
           未选择学员
         </div>
@@ -63,12 +64,13 @@ export const DietitianStudentDetailView = () => {
   const handleSaveComment = (recordId: string) => {
     updateDietRecord(recordId, {
       dietitianComment: commentText,
-      dietitianId: user?.id,
+      dietitianScore: commentScore,
       dietitianName: user?.name || '营养师',
       dietitianCommentDate: format(new Date(), 'yyyy-MM-dd HH:mm:ss')
     });
     setCommentingId(null);
     setCommentText('');
+    setCommentScore(1);
   };
 
   const handleMedicalChange = (catIdx: number, itemIdx: number, field: 'beforeValue' | 'afterValue', value: string) => {
@@ -92,19 +94,29 @@ export const DietitianStudentDetailView = () => {
 
   return (
     <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-safe relative font-sans">
-      <NavBar title={`${student.name} 的档案`} onBack={() => setCurrentView('dietitian-dashboard')} />
+      <NavBar title={`${student.name} 的档案`} onBack={goBack} />
       
       <div className="bg-white px-4 pt-4 border-b border-gray-200 sticky top-14 z-10 space-y-4">
-        <Card className="flex items-center space-x-3 p-4 bg-[#FF976A]/5 border-[#FF976A]/20">
-          <div className="h-10 w-10 rounded-full bg-[#FF976A]/10 flex items-center justify-center text-[#FF976A]">
-            <UserCircle className="h-6 w-6" />
-          </div>
-          <div>
-            <div className="text-sm font-bold text-gray-900 mb-1">{student.name}</div>
-            <div className="text-xs text-gray-500">
-              {student.gender === 'male' ? '男' : '女'} · {student.age}岁 · {student.phone}
+        <Card className="flex items-center justify-between p-4 bg-[#FF976A]/5 border-[#FF976A]/20">
+          <div className="flex items-center space-x-3">
+            <div className="h-10 w-10 rounded-full bg-[#FF976A]/10 flex items-center justify-center text-[#FF976A]">
+              <UserCircle className="h-6 w-6" />
+            </div>
+            <div>
+              <div className="text-sm font-bold text-gray-900 mb-1">{student.name}</div>
+              <div className="text-xs text-gray-500">
+                {student.gender === 'male' ? '男' : '女'} · {student.age}岁 · {student.phone}
+              </div>
             </div>
           </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-[#FF976A] border-[#FF976A] shrink-0 text-xs"
+            onClick={() => setCurrentView('pointsDetail')}
+          >
+            积分与排名
+          </Button>
         </Card>
 
         <div className="flex gap-4 overflow-x-auto whitespace-nowrap pb-1 no-scrollbar">
@@ -164,7 +176,30 @@ export const DietitianStudentDetailView = () => {
 
                   <div className="p-4 bg-gray-50/50">
                     {commentingId === record.id ? (
-                      <div className="space-y-2">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <label className="text-sm text-gray-700 font-medium">该餐打分:</label>
+                          <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                            <button
+                              className={`px-3 py-1 rounded-md text-xs font-bold transition-colors ${commentScore === 1 ? 'bg-[#FF976A] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+                              onClick={() => setCommentScore(1)}
+                            >
+                              +1 (认可)
+                            </button>
+                            <button
+                              className={`px-3 py-1 rounded-md text-xs font-bold transition-colors ${commentScore === 0 ? 'bg-gray-300 text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+                              onClick={() => setCommentScore(0)}
+                            >
+                              0 (不计分)
+                            </button>
+                            <button
+                              className={`px-3 py-1 rounded-md text-xs font-bold transition-colors ${commentScore === -1 ? 'bg-red-500 text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+                              onClick={() => setCommentScore(-1)}
+                            >
+                              -1 (扣分)
+                            </button>
+                          </div>
+                        </div>
                         <textarea
                           className="w-full rounded-lg border border-gray-200 p-2 text-sm focus:outline-none focus:border-[#FF976A]"
                           rows={3}
@@ -181,7 +216,16 @@ export const DietitianStudentDetailView = () => {
                     ) : record.dietitianComment ? (
                       <div className="relative group">
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-bold text-[#FF976A]">您的批注</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-[#FF976A]">您的批注</span>
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${
+                              (record.dietitianScore ?? 1) > 0 ? 'bg-green-100 text-green-700' :
+                              (record.dietitianScore ?? 1) < 0 ? 'bg-red-100 text-red-700' :
+                              'bg-gray-200 text-gray-600'
+                            }`}>
+                              积分: {(record.dietitianScore ?? 1) > 0 ? `+${record.dietitianScore ?? 1}` : (record.dietitianScore ?? 1)}
+                            </span>
+                          </div>
                           {record.dietitianCommentDate && (
                             <span className="text-[10px] text-gray-500">{record.dietitianCommentDate}</span>
                           )}
@@ -193,6 +237,7 @@ export const DietitianStudentDetailView = () => {
                           onClick={() => {
                             setCommentingId(record.id);
                             setCommentText(record.dietitianComment || '');
+                            setCommentScore(record.dietitianScore ?? 1);
                           }}
                           className="text-xs text-[#1677FF] mt-2 block"
                         >
@@ -204,11 +249,12 @@ export const DietitianStudentDetailView = () => {
                         onClick={() => {
                           setCommentingId(record.id);
                           setCommentText('');
+                          setCommentScore(1);
                         }}
                         className="flex items-center gap-1 text-sm text-[#FF976A] font-medium"
                       >
                         <MessageCircle className="w-4 h-4" />
-                        添加批注
+                        添加批注 (未打分，预估+1)
                       </button>
                     )}
                   </div>

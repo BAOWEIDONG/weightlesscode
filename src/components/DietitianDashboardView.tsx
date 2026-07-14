@@ -3,6 +3,7 @@ import { useApp } from '../AppContext';
 import { NavBar, Card } from './ui';
 import { Users, UserCircle, LogOut, CheckCircle, XCircle } from 'lucide-react';
 import { MOCK_STUDENTS } from '../AppContext';
+import { rankStudents } from '../lib/scoring';
 
 export const DietitianDashboardView = () => {
   const { user, setCurrentView, setSelectedStudentId, dietRecords, exerciseRecords } = useApp();
@@ -13,10 +14,14 @@ export const DietitianDashboardView = () => {
 
   const todayStr = new Date().toISOString().split('T')[0];
 
+  const rankedStudents = useMemo(() => {
+    return rankStudents(MOCK_STUDENTS, dietRecords, exerciseRecords);
+  }, [dietRecords, exerciseRecords]);
+
   const studentsStatus = useMemo(() => {
     return MOCK_STUDENTS.map(student => {
       const studentDiets = dietRecords.filter(r => (r.studentId === student.id || r.studentId === undefined) && r.date.startsWith(todayStr));
-      const studentExercises = exerciseRecords.filter(r => r.date.startsWith(todayStr)); // Mock exercise doesn't have studentId currently, assume if we implement it we'd check it. For now, since it's mock, we'll pretend there's an id or just check length if we add studentId to it. Actually, wait, exerciseRecords in types doesn't have studentId. Let me just check if ANY record exists for now, or just mock it. Wait, the user said "并且个人档案里需要增加运动打卡这个选项". I should add studentId to ExerciseRecord and WeightRecord!
+      const studentExercises = exerciseRecords.filter(r => r.date.startsWith(todayStr)); 
       
       const hasBreakfast = studentDiets.some(d => d.meal === 'breakfast');
       const hasLunch = studentDiets.some(d => d.meal === 'lunch');
@@ -29,13 +34,17 @@ export const DietitianDashboardView = () => {
       if (!hasDinner) missing.push('晚餐');
       if (!hasExercise) missing.push('运动');
 
+      const rankInfo = rankedStudents.find(r => r.studentId === student.id);
+
       return {
         ...student,
         isCompleted: missing.length === 0,
-        missingTags: missing
+        missingTags: missing,
+        totalScore: rankInfo?.totalScore || 0,
+        rank: rankInfo?.rank || 0,
       };
     });
-  }, [dietRecords, exerciseRecords, todayStr]);
+  }, [dietRecords, exerciseRecords, todayStr, rankedStudents]);
 
   const completedStudents = studentsStatus.filter(s => s.isCompleted);
   const incompleteStudents = studentsStatus.filter(s => !s.isCompleted);
@@ -54,7 +63,12 @@ export const DietitianDashboardView = () => {
           <UserCircle className="h-6 w-6" />
         </div>
         <div>
-          <div className="text-sm font-bold text-gray-900 mb-1">{student.name}</div>
+          <div className="text-sm font-bold text-gray-900 mb-1 flex items-center gap-2">
+            {student.name}
+            <span className="text-[10px] font-medium bg-[#FF976A]/10 text-[#FF976A] px-1.5 py-0.5 rounded">
+              总排名第{student.rank}位 / {student.totalScore}分
+            </span>
+          </div>
           <div className="text-[10px] text-gray-500 mb-1.5">
             {student.gender === 'male' ? '男' : '女'} · {student.age}岁 · {student.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')}
           </div>
@@ -94,21 +108,35 @@ export const DietitianDashboardView = () => {
       </div>
 
       <div className="flex-1 px-5 space-y-6 relative -mt-2">
-        <Card 
-          className="flex items-center justify-between p-5 bg-white border border-[#FF976A]/20 cursor-pointer hover:shadow-md transition-shadow shadow-sm"
-          onClick={() => setCurrentView('dietitian-unannotated-list')}
-        >
-          <div>
+        <div className="grid grid-cols-2 gap-4">
+          <Card 
+            className="flex flex-col justify-center p-4 bg-white border border-[#FF976A]/20 cursor-pointer hover:shadow-md transition-shadow shadow-sm"
+            onClick={() => setCurrentView('dietitian-unannotated-list')}
+          >
             <div className="text-sm font-bold text-gray-900 mb-1 flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-[#FF976A]"></div>
               待批注饮食
             </div>
-            <div className="text-[11px] text-gray-500 mt-1">{unannotatedCount > 0 ? `有 ${unannotatedCount} 条记录待批注` : '所有记录已批注完毕'}</div>
-          </div>
-          <div className="text-[#FF976A] font-bold flex items-center gap-1 text-sm bg-orange-50 px-3 py-1.5 rounded-full">
-            {unannotatedCount > 0 ? '去处理' : '查看'} <span className="text-lg leading-none ml-0.5">›</span>
-          </div>
-        </Card>
+            <div className="text-[10px] text-gray-500 mb-2">{unannotatedCount > 0 ? `有 ${unannotatedCount} 条记录` : '已全部批注'}</div>
+            <div className="text-[#FF976A] font-bold flex items-center gap-1 text-[11px] bg-orange-50 px-2 py-1 rounded-lg w-fit">
+              {unannotatedCount > 0 ? '去处理' : '查看'} <span className="text-sm leading-none ml-0.5">›</span>
+            </div>
+          </Card>
+
+          <Card 
+            className="flex flex-col justify-center p-4 bg-white border border-[#FF976A]/20 cursor-pointer hover:shadow-md transition-shadow shadow-sm"
+            onClick={() => setCurrentView('ranking')}
+          >
+            <div className="text-sm font-bold text-gray-900 mb-1 flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-yellow-400"></div>
+              总排名榜单
+            </div>
+            <div className="text-[10px] text-gray-500 mb-2">查看并导出积分数据</div>
+            <div className="text-yellow-600 font-bold flex items-center gap-1 text-[11px] bg-yellow-50 px-2 py-1 rounded-lg w-fit">
+              去查看 <span className="text-sm leading-none ml-0.5">›</span>
+            </div>
+          </Card>
+        </div>
 
         <div>
           <div className="flex bg-white p-1 rounded-xl shadow-sm mb-4">

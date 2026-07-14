@@ -5,7 +5,7 @@ import { Camera, X, UserCircle } from 'lucide-react';
 import { format } from 'date-fns';
 
 export const CoachRecordView = () => {
-  const { setCurrentView, addExerciseRecord, selectedStudentId } = useApp();
+  const { setCurrentView, goBack, addExerciseRecord, selectedStudentId } = useApp();
   
   const student = MOCK_STUDENTS.find(s => s.id === selectedStudentId);
 
@@ -47,7 +47,7 @@ export const CoachRecordView = () => {
   if (!student) {
     return (
       <div className="flex h-full flex-col bg-[#F7F8FA] pb-safe">
-        <NavBar title="上传陪练记录" onBack={() => setCurrentView('coach-dashboard')} />
+        <NavBar title="上传陪练记录" onBack={goBack} />
         <div className="flex-1 flex items-center justify-center text-gray-500 text-sm">
           未选择学员
         </div>
@@ -57,7 +57,7 @@ export const CoachRecordView = () => {
 
   return (
     <div className="flex h-screen flex-col bg-[#F7F8FA] overflow-y-auto pb-safe">
-      <NavBar title="上传活动照片" onBack={() => setCurrentView('coach-dashboard')} />
+      <NavBar title="上传活动照片" onBack={goBack} />
       
       <div className="p-4 space-y-4">
         <Card className="flex items-center space-x-3 p-4 bg-[#07C160]/5 border-[#07C160]/20">

@@ -1,69 +1,87 @@
-import React from 'react';
-import { useApp } from '../AppContext';
+import React, { useMemo } from 'react';
+import { useApp, MOCK_STUDENTS } from '../AppContext';
 import { NavBar, Card } from './ui';
-import { Activity, Coffee, Calendar, FileText, UserCircle, Scale, PlayCircle, LogOut, Medal, Target } from 'lucide-react';
+import { Activity, Coffee, Calendar, FileText, UserCircle, Scale, PlayCircle, LogOut, Medal, Target, Trophy } from 'lucide-react';
+import { rankStudents } from '../lib/scoring';
+import { getTodayQuote } from '../lib/motivationalQuotes';
 
 export const StudentDashboardView = () => {
-  const { user, setCurrentView, weightRecords } = useApp();
+  const { user, setCurrentView, weightRecords, dietRecords, exerciseRecords } = useApp();
   const latestWeight = weightRecords.length > 0 ? weightRecords[weightRecords.length - 1].weight : (user?.weight || '--');
+
+  const scoreData = useMemo(() => {
+    if (!user) return null;
+    const ranked = rankStudents(MOCK_STUDENTS, dietRecords, exerciseRecords);
+    return ranked.find(s => s.studentId === user.id);
+  }, [user, dietRecords, exerciseRecords]);
 
   return (
     <div className="flex h-full flex-col bg-[#F4F6F8] pb-20 overflow-y-auto font-sans relative">
       {/* Dynamic Background Header */}
       <div className="relative pt-12 px-6 pb-20 bg-gradient-to-br from-[#07C160] to-[#04a551] rounded-b-[40px] shadow-lg overflow-hidden">
         {/* Abstract shapes for sporty background */}
-        <div className="absolute -top-10 -right-10 w-64 h-64 bg-white/20 rounded-full blur-2xl opacity-60 transform translate-x-1/4 -translate-y-1/4"></div>
-        <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-white/20 rounded-full blur-2xl opacity-60 transform -translate-x-1/4 translate-y-1/4"></div>
-        <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-yellow-300/30 rounded-full blur-2xl mix-blend-overlay transform -translate-y-1/2"></div>
+        <div className="absolute -top-10 -right-10 w-64 h-64 bg-white/20 rounded-full blur-2xl opacity-60 transform translate-x-1/4 -translate-y-1/4 z-0 pointer-events-none"></div>
+        <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-white/20 rounded-full blur-2xl opacity-60 transform -translate-x-1/4 translate-y-1/4 z-0 pointer-events-none"></div>
+        <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-yellow-300/30 rounded-full blur-2xl mix-blend-overlay transform -translate-y-1/2 z-0 pointer-events-none"></div>
         
         <div className="relative z-10 flex justify-between items-center mb-6">
-          <h1 className="text-sm font-bold text-white flex items-center gap-1 shadow-sm px-3 py-1.5 bg-black/10 rounded-full backdrop-blur-sm">
-            <Medal className="h-4 w-4 text-yellow-300" />
-            28天轻体减重训练营
+          <h1 className="text-sm font-bold text-white flex items-center gap-1 shadow-sm px-3 py-1.5 bg-black/10 rounded-full backdrop-blur-sm shrink-0">
+            <Medal className="h-4 w-4 text-yellow-300 shrink-0" />
+            <span className="truncate">28天营养减重训练营</span>
           </h1>
-          <button onClick={() => setCurrentView('login')} className="text-white hover:text-white transition-colors flex items-center gap-1 text-xs bg-black/10 px-3 py-1.5 rounded-full backdrop-blur-sm shadow-sm">
-            <LogOut className="h-3 w-3" /> 退出
+          <button onClick={() => setCurrentView('login')} className="text-white hover:text-white transition-colors flex items-center gap-1 text-xs bg-black/10 px-3 py-1.5 rounded-full backdrop-blur-sm shadow-sm shrink-0 ml-2">
+            <LogOut className="h-3 w-3 shrink-0" /> 退出
           </button>
         </div>
 
-        <div className="relative z-10 flex items-center space-x-4">
+        <div className="relative z-10 flex items-start space-x-4">
           <div className="h-16 w-16 rounded-full bg-white p-1 shadow-lg shrink-0">
             <div className="h-full w-full bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
-              <UserCircle className="h-12 w-12 text-gray-400" />
+              <UserCircle className="h-12 w-12 text-gray-400 shrink-0" />
             </div>
           </div>
-          <div>
-            <h2 className="text-2xl font-black text-white tracking-tight drop-shadow-md">你好，{user?.name || '学员'}</h2>
-            <div className="flex items-center gap-2 mt-2">
-              <span className="text-xs font-bold text-[#04a551] bg-white px-2.5 py-0.5 rounded-full tracking-wide shadow-sm">DAY 1</span>
-              <span className="text-xs text-white/90 font-medium tracking-wide drop-shadow-sm">坚持就是胜利</span>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-2xl font-black text-white tracking-tight drop-shadow-md truncate">你好，{user?.name || '学员'}</h2>
+            <div className="flex items-start gap-2 mt-2">
+              <span className="text-[11px] font-bold text-[#04a551] bg-white px-2 py-0.5 rounded-full tracking-wide shadow-sm shrink-0 mt-0.5">DAY 1</span>
+              <span className="text-xs text-white/90 font-medium tracking-wide drop-shadow-sm leading-snug min-h-[36px] break-words break-all">{getTodayQuote()}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 px-5 pt-0 space-y-5 -mt-12 relative z-20">
-        <Card className="flex items-center justify-between p-6 cursor-pointer hover:shadow-lg transition-shadow border-0 shadow-md relative overflow-hidden" onClick={() => setCurrentView('weight-checkin')}>
-          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#07C160]/20 to-teal-100 rounded-full blur-2xl transform translate-x-1/4 -translate-y-1/4"></div>
-          
-          <div className="relative z-10 flex flex-col justify-center">
-            <div className="flex items-center gap-2 mb-1">
-              <Target className="w-4 h-4 text-[#07C160]" />
-              <div className="text-xs text-gray-500 uppercase font-bold tracking-widest">最新体重</div>
+      <div className="flex-1 px-5 pt-0 space-y-5 -mt-10 relative z-20">
+        <div className="grid grid-cols-2 gap-4 items-stretch">
+          <Card className="flex flex-col justify-center p-5 cursor-pointer hover:shadow-lg transition-shadow border-0 shadow-md relative overflow-hidden h-full" onClick={() => setCurrentView('weight-checkin')}>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#07C160]/20 to-teal-100 rounded-full blur-2xl transform translate-x-1/4 -translate-y-1/4 z-0 pointer-events-none"></div>
+            <div className="relative z-10">
+              <div className="flex items-center gap-1 mb-2">
+                <Target className="w-4 h-4 text-[#07C160] shrink-0" />
+                <div className="text-xs text-gray-500 font-bold truncate">最新体重</div>
+              </div>
+              <div className="flex items-end gap-1">
+                <span className="text-3xl font-black text-gray-900 tracking-tighter truncate">{latestWeight}</span>
+                <span className="text-sm mb-1 text-gray-500 font-medium shrink-0">kg</span>
+              </div>
             </div>
-            <div className="flex items-end gap-1">
-              <span className="text-5xl font-black text-gray-900 tracking-tighter">{latestWeight}</span>
-              <span className="text-lg mb-1 text-gray-500 font-medium">kg</span>
+          </Card>
+
+          <Card className="flex flex-col justify-center p-5 cursor-pointer hover:shadow-lg transition-shadow border-0 shadow-md relative overflow-hidden h-full" onClick={() => setCurrentView('ranking')}>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#FF976A]/20 to-orange-100 rounded-full blur-2xl transform translate-x-1/4 -translate-y-1/4 z-0 pointer-events-none"></div>
+            <div className="relative z-10 flex flex-col h-full justify-between">
+              <div>
+                <div className="flex items-center gap-1 mb-2">
+                  <Trophy className="w-4 h-4 text-[#FF976A] shrink-0" />
+                  <div className="text-xs text-gray-500 font-bold truncate">我的排名</div>
+                </div>
+                <div className="flex items-end gap-1">
+                  <span className="text-[28px] font-black text-gray-900 tracking-tighter truncate">第{scoreData?.rank || '--'}位</span>
+                </div>
+              </div>
+              <div className="text-xs text-gray-500 font-medium mt-1 truncate">总计 {scoreData?.totalScore || 0} 分</div>
             </div>
-          </div>
-          
-          <div className="relative z-10 flex flex-col items-end text-right">
-            <div className="text-[13px] font-bold text-gray-800 bg-white/80 px-3 py-2 rounded-xl border border-gray-100 shadow-sm mb-1.5 backdrop-blur-md whitespace-nowrap">
-              "汗水是脂肪的眼泪"
-            </div>
-            <div className="text-[10px] text-gray-400 font-medium">每天进步一点点！</div>
-          </div>
-        </Card>
+          </Card>
+        </div>
 
         <div>
           <h3 className="text-sm font-bold text-gray-900 mb-3 ml-1 flex items-center gap-1.5">

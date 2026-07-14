@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import type { User, WeightRecord, ExerciseRecord, DietRecord, CoachRecord, CoachActivityRecord } from './types';
 
-export type View = 'login' | 'register' | 'questionnaire' | 'dashboard' | 'upload' | 'health-profile' | 'exercise' | 'diet' | 'weight-checkin' | 'calendar' | 'coach-dashboard' | 'coach-record-upload' | 'activity-upload' | 'dietitian-dashboard' | 'dietitian-student-detail' | 'dietitian-unannotated-list' | 'activities-list' | 'video-player' | 'camp-stats';
+export type View = 'login' | 'register' | 'questionnaire' | 'dashboard' | 'upload' | 'health-profile' | 'exercise' | 'diet' | 'weight-checkin' | 'calendar' | 'coach-dashboard' | 'coach-record-upload' | 'activity-upload' | 'dietitian-dashboard' | 'dietitian-student-detail' | 'dietitian-unannotated-list' | 'activities-list' | 'video-player' | 'camp-stats' | 'ranking' | 'pointsDetail';
 
 interface AppState {
   user: User | null;
@@ -18,6 +18,7 @@ interface AppState {
   
   setUser: (user: User | null) => void;
   setCurrentView: (view: View) => void;
+  goBack: () => void;
   setQuestionnaireAnswered: (v: boolean) => void;
   addWeightRecord: (record: WeightRecord) => void;
   addExerciseRecord: (record: ExerciseRecord) => void;
@@ -35,10 +36,10 @@ const AppContext = createContext<AppState | undefined>(undefined);
 export const MOCK_STUDENTS = [
   { id: 's1', name: '李明', age: 32, gender: 'male', phone: '13800000001' },
   { id: 's2', name: '王丽', age: 28, gender: 'female', phone: '13800000002' },
-  { id: 's3', name: '张伟', age: 45, gender: 'male', phone: '13800000003' },
+  { id: 's3', name: '张伟', age: 45, gender: 'male', phone: '13800000003' }
 ];
 
-const MOCK_DIET_RECORDS: DietRecord[] = [
+export const MOCK_DIET_RECORDS: DietRecord[] = [
   {
     id: 'd1',
     studentId: 's1', // 王大锤
@@ -50,6 +51,7 @@ const MOCK_DIET_RECORDS: DietRecord[] = [
       'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=400&q=80',
     ],
     dietitianComment: '早餐搭配很不错，碳水和蛋白质都有了，继续保持！',
+    dietitianScore: 1,
   },
   {
     id: 'd2',
@@ -62,15 +64,18 @@ const MOCK_DIET_RECORDS: DietRecord[] = [
       'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80',
     ],
     dietitianComment: '非常标准的减脂餐，蔬菜比例很好。',
+    dietitianScore: 1,
   },
   {
     id: 'd3',
     studentId: 's1', // 张伟
     date: new Date().toISOString().split('T')[0] + ' 18:45:00', // today
     meal: 'dinner',
-    description: '清炒时蔬，糙米饭半碗',
+    description: '未进食',
+    isFasted: true,
     photos: ['https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80'],
-    dietitianComment: '晚餐清淡适量，非常棒！',
+    dietitianComment: '不推荐节食！',
+    dietitianScore: 0,
   },
   {
     id: 'd4',
@@ -80,15 +85,17 @@ const MOCK_DIET_RECORDS: DietRecord[] = [
     description: '紫薯一块，豆浆一杯，水煮蛋一个',
     photos: ['https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&q=80'],
     dietitianComment: '很好，建议再搭配一点小番茄或者黄瓜。',
+    dietitianScore: 1,
   },
   {
     id: 'd5',
     studentId: 's1',
     date: new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0] + ' 13:20:00', // 2 days ago
     meal: 'lunch',
-    description: '番茄牛腩，少油少盐，半碗杂粮饭',
+    description: '炸鸡排，可乐',
     photos: ['https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=400&q=80'],
-    dietitianComment: '肉类选择不错，注意控制汤汁的摄入哦。',
+    dietitianComment: '热量超标了，扣分！',
+    dietitianScore: -1,
   },
   // --- New Mock Unannotated Data for Dietitian ---
   {
@@ -112,27 +119,30 @@ const MOCK_DIET_RECORDS: DietRecord[] = [
     studentId: 's3', // 张伟
     date: new Date().toISOString().split('T')[0] + ' 08:15:00', // today
     meal: 'breakfast',
-    description: '包子两个，豆浆',
+    description: '未进食',
+    isFasted: true,
     photos: ['https://images.unsplash.com/photo-1517673132405-a56a62b18caf?w=400&q=80'],
   },
   {
     id: 'd9',
-    studentId: 's1',
-    date: new Date(Date.now() - 86400000 * 5).toISOString().split('T')[0] + ' 18:00:00', // 5 days ago
-    meal: 'dinner',
+    studentId: 's3',
+    date: new Date().toISOString().split('T')[0] + ' 12:00:00', // 5 days ago
+    meal: 'lunch',
     description: '鸡胸肉沙拉',
     photos: ['https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=80'],
     dietitianComment: '鸡胸肉沙拉很棒，注意沙拉酱的热量。',
+    dietitianScore: 1,
   },
   {
     id: 'd10',
-    studentId: 's1',
-    date: new Date(Date.now() - 86400000 * 4).toISOString().split('T')[0] + ' 12:00:00', // 4 days ago
-    meal: 'lunch',
+    studentId: 's3',
+    date: new Date().toISOString().split('T')[0] + ' 18:00:00', // 4 days ago
+    meal: 'dinner',
     description: '紫薯、牛肉',
     photos: ['https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80'],
     dietitianComment: '牛肉补充蛋白质很好。',
-  }
+    dietitianScore: 1,
+  },
 ];
 
 const MOCK_WEIGHT_RECORDS: WeightRecord[] = [
@@ -183,7 +193,7 @@ const MOCK_EXERCISE_RECORDS: ExerciseRecord[] = [
     studentId: 's1',
     date: new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0] + ' 18:30:00',
     type: '跑步',
-    duration: 30,
+    duration: 30, // < 40
     intensity: 3,
     photos: [
       'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&q=80',
@@ -193,7 +203,7 @@ const MOCK_EXERCISE_RECORDS: ExerciseRecord[] = [
   },
   {
     id: 'e2',
-    studentId: 's1',
+    studentId: 's2',
     date: new Date(Date.now() - 86400000).toISOString().split('T')[0] + ' 19:00:00',
     type: '力量训练',
     duration: 45,
@@ -205,7 +215,7 @@ const MOCK_EXERCISE_RECORDS: ExerciseRecord[] = [
   },
   {
     id: 'e3',
-    studentId: 's1',
+    studentId: 's3',
     date: new Date().toISOString().split('T')[0] + ' 20:00:00',
     type: '瑜伽',
     duration: 40,
@@ -217,9 +227,9 @@ const MOCK_EXERCISE_RECORDS: ExerciseRecord[] = [
     studentId: 's2',
     date: new Date().toISOString().split('T')[0] + ' 17:30:00',
     type: '跑步',
-    duration: 20,
+    duration: 20, // < 40
     intensity: 3,
-  }
+  },
 ];
 
 const MOCK_COACH_ACTIVITIES: CoachActivityRecord[] = [
@@ -234,6 +244,7 @@ const MOCK_COACH_ACTIVITIES: CoachActivityRecord[] = [
     ],
     coachName: '李教练',
     date: new Date().toISOString().split('T')[0],
+    videoUrl: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
   },
   {
     id: 'a2',
@@ -262,7 +273,20 @@ const MOCK_COACH_ACTIVITIES: CoachActivityRecord[] = [
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [currentView, setCurrentView] = useState<View>('login');
+  const [viewHistory, setViewHistory] = useState<View[]>(['login']);
+  const currentView = viewHistory[viewHistory.length - 1];
+  
+  const setCurrentView = (view: View) => {
+    setViewHistory(prev => {
+      if (prev[prev.length - 1] === view) return prev;
+      return [...prev, view];
+    });
+  };
+
+  const goBack = () => {
+    setViewHistory(prev => prev.length > 1 ? prev.slice(0, -1) : prev);
+  };
+
   const [questionnaireAnswered, setQuestionnaireAnswered] = useState(false);
   const [weightRecords, setWeightRecords] = useState<WeightRecord[]>(MOCK_WEIGHT_RECORDS);
   const [exerciseRecords, setExerciseRecords] = useState<ExerciseRecord[]>(MOCK_EXERCISE_RECORDS);
@@ -277,7 +301,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   return (
     <AppContext.Provider value={{
       user, setUser,
-      currentView, setCurrentView,
+      currentView, setCurrentView, goBack,
       questionnaireAnswered, setQuestionnaireAnswered,
       weightRecords, addWeightRecord: (r) => setWeightRecords(prev => [...prev, r]),
       exerciseRecords, addExerciseRecord: (r) => setExerciseRecords(prev => [...prev, r]),

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useApp } from '../AppContext';
 import { NavBar, Card, Button, Input } from './ui';
-import { Camera, UploadCloud, FileText } from 'lucide-react';
+import { Camera, UploadCloud, FileText, Video } from 'lucide-react';
 import { format } from 'date-fns';
 
 export const ActivityUploadView = () => {
-  const { setCurrentView, addCoachActivity, user } = useApp();
+  const { setCurrentView, goBack, addCoachActivity, user } = useApp();
   
   const [formData, setFormData] = useState({
     title: '',
@@ -13,10 +13,15 @@ export const ActivityUploadView = () => {
   });
   
   const [imageFiles, setImageFiles] = useState<string[]>([]);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [error, setError] = useState('');
 
-  const handleSimulateUpload = () => {
+  const handleSimulatePhotoUpload = () => {
     setImageFiles(prev => [...prev, `https://source.unsplash.com/random/400x300?fitness&sig=${Date.now()}`]);
+  };
+
+  const handleSimulateVideoUpload = () => {
+    setVideoUrl('http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4');
   };
 
   const handleSubmit = () => {
@@ -28,8 +33,8 @@ export const ActivityUploadView = () => {
       setError('请输入活动介绍');
       return;
     }
-    if (imageFiles.length === 0) {
-      setError('请上传至少一张活动图片');
+    if (imageFiles.length === 0 && !videoUrl) {
+      setError('请至少上传一张图片或视频');
       return;
     }
 
@@ -38,6 +43,7 @@ export const ActivityUploadView = () => {
       title: formData.title,
       description: formData.description,
       imageUrls: imageFiles,
+      videoUrl: videoUrl || undefined,
       coachName: user?.name || '教练',
       date: format(new Date(), 'yyyy-MM-dd'),
     });
@@ -47,24 +53,46 @@ export const ActivityUploadView = () => {
 
   return (
     <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-safe">
-      <NavBar title="发布锻炼活动" onBack={() => setCurrentView('coach-dashboard')} />
+      <NavBar title="发布锻炼活动" onBack={goBack} />
       
       <div className="p-4 space-y-4">
         <Card>
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-gray-700 block mb-2">活动图片 <span className="text-red-500">*</span></label>
+              <label className="text-sm font-medium text-gray-700 block mb-2">活动多媒体 <span className="text-red-500">*</span></label>
               
               <div className="grid grid-cols-3 gap-2">
+                {videoUrl && (
+                  <div className="aspect-square rounded-xl bg-black overflow-hidden relative col-span-2 row-span-2">
+                    <video src={videoUrl} className="w-full h-full object-contain" controls />
+                    <button 
+                      onClick={() => setVideoUrl(null)}
+                      className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-1 text-xs"
+                    >
+                      删除
+                    </button>
+                  </div>
+                )}
+                
                 {imageFiles.map((url, index) => (
                   <div key={index} className="aspect-square rounded-xl bg-gray-100 overflow-hidden relative">
                     <img src={url} alt={`Preview ${index}`} className="w-full h-full object-cover" />
                   </div>
                 ))}
                 
-                {imageFiles.length < 9 && (
+                {!videoUrl && (
                   <div 
-                    onClick={handleSimulateUpload}
+                    onClick={handleSimulateVideoUpload}
+                    className="aspect-square rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors"
+                  >
+                    <Video className="h-6 w-6 text-[#1677FF] mb-1" />
+                    <span className="text-[10px] text-gray-400">上传视频</span>
+                  </div>
+                )}
+
+                {imageFiles.length < (videoUrl ? 7 : 8) && (
+                  <div 
+                    onClick={handleSimulatePhotoUpload}
                     className="aspect-square rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors"
                   >
                     <Camera className="h-6 w-6 text-gray-400 mb-1" />

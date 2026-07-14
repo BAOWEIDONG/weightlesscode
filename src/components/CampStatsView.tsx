@@ -24,7 +24,7 @@ const MOCK_DATA = [
 ];
 
 export const CampStatsView = () => {
-  const { setCurrentView } = useApp();
+  const { setCurrentView, goBack } = useApp();
   const [activeTab, setActiveTab] = useState<'individual' | 'average'>('average');
 
   // Calculate changes for each student
@@ -66,7 +66,7 @@ export const CampStatsView = () => {
 
   return (
     <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-safe">
-      <NavBar title="结营数据统计" onBack={() => setCurrentView('coach-dashboard')} right={
+      <NavBar title="结营数据统计" onBack={goBack} right={
         <button className="p-2 text-gray-500 hover:text-gray-900" onClick={() => alert('数据已导出')}>
           <Download className="w-5 h-5" />
         </button>

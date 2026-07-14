@@ -13,7 +13,7 @@ const MEAL_TYPES = [
 ];
 
 export const DietView = () => {
-  const { setCurrentView, addDietRecord, dietRecords, user } = useApp();
+  const { setCurrentView, goBack, addDietRecord, dietRecords, user } = useApp();
   
   const todayStr = format(new Date(), 'yyyy-MM-dd');
   const userDiets = dietRecords.filter(r => r.studentId === user?.id || !r.studentId);
@@ -26,6 +26,7 @@ export const DietView = () => {
   const [formData, setFormData] = useState({
     meal: initialMeal,
     description: '',
+    isFasted: false,
   });
   
   const [photos, setPhotos] = useState<string[]>([]);
@@ -46,11 +47,11 @@ export const DietView = () => {
       setError('今日餐次已全部打卡');
       return;
     }
-    if (formData.description.length < 5 || formData.description.length > 500) {
+    if (!formData.isFasted && (formData.description.length < 5 || formData.description.length > 500)) {
       setError('请输入5-500字的食物描述');
       return;
     }
-    if (photos.length === 0) {
+    if (!formData.isFasted && photos.length === 0) {
       setError('请至少上传一张照片');
       return;
     }
@@ -65,12 +66,13 @@ export const DietView = () => {
       studentId: user?.id || 's1',
       date: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
       meal: formData.meal as any,
-      description: formData.description,
-      photos: photos
+      description: formData.isFasted ? '未进食' : formData.description,
+      photos: formData.isFasted ? [] : photos,
+      isFasted: formData.isFasted,
     });
     
     // reset form
-    setFormData({ meal: '', description: '' });
+    setFormData({ meal: '', description: '', isFasted: false });
     setPhotos([]);
   };
 
@@ -91,7 +93,7 @@ export const DietView = () => {
 
   return (
     <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-8">
-      <NavBar title="饮食打卡" onBack={() => setCurrentView('dashboard')} />
+      <NavBar title="饮食打卡" onBack={goBack} />
       
       <div className="p-4 space-y-6">
         {/* Top: Upload Area */}
@@ -121,51 +123,74 @@ export const DietView = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 block">食物描述 <span className="text-red-500">*</span></label>
-            <div className="relative">
-              <textarea
-                placeholder="请详细描述您的餐食，包含食物种类和大概份量 (5-500字)"
-                value={formData.description}
-                onChange={(e) => { setFormData(p => ({ ...p, description: e.target.value })); setError(''); }}
-                className="w-full h-24 p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF976A]/20 focus:border-[#FF976A] resize-none text-sm text-gray-900 placeholder:text-gray-400"
-                maxLength={500}
-              />
-              <div className="absolute bottom-2 right-2 text-xs text-gray-400">
-                {formData.description.length}/500
-              </div>
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-gray-700">食物描述 {!formData.isFasted && <span className="text-red-500">*</span>}</label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  checked={formData.isFasted}
+                  onChange={(e) => {
+                    setFormData(p => ({ ...p, isFasted: e.target.checked, description: '' }));
+                    setError('');
+                  }}
+                  className="w-4 h-4 text-[#FF976A] rounded border-gray-300 focus:ring-[#FF976A]"
+                />
+                <span className="text-sm font-medium text-gray-700">未进食</span>
+              </label>
             </div>
+            {formData.isFasted && (
+              <div className="bg-yellow-50 text-yellow-700 p-2 text-xs rounded-lg mt-2">
+                不推荐节食，科学饮食搭配运动才是健康减重之道。
+              </div>
+            )}
+            {!formData.isFasted && (
+              <div className="relative">
+                <textarea
+                  placeholder="请详细描述您的餐食，包含食物种类和大概份量 (5-500字)"
+                  value={formData.description}
+                  onChange={(e) => { setFormData(p => ({ ...p, description: e.target.value })); setError(''); }}
+                  className="w-full h-24 p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF976A]/20 focus:border-[#FF976A] resize-none text-sm text-gray-900 placeholder:text-gray-400"
+                  maxLength={500}
+                />
+                <div className="absolute bottom-2 right-2 text-xs text-gray-400">
+                  {formData.description.length}/500
+                </div>
+              </div>
+            )}
           </div>
 
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <label className="text-sm font-medium text-gray-700 block">拍照记录 <span className="text-red-500">*</span></label>
-              <span className="text-xs text-gray-400">{photos.length}/3 张</span>
-            </div>
-            
-            <div className="grid grid-cols-3 gap-2">
-              {photos.map((url, idx) => (
-                <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-gray-100">
-                  <img src={url} alt={`上传的照片 ${idx + 1}`} className="w-full h-full object-cover" />
-                  <button 
-                    onClick={() => removePhoto(idx)}
-                    className="absolute top-1 right-1 bg-black/50 rounded-full p-1 text-white hover:bg-black/70"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
+          {!formData.isFasted && (
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <label className="text-sm font-medium text-gray-700 block">拍照记录 <span className="text-red-500">*</span></label>
+                <span className="text-xs text-gray-400">{photos.length}/3 张</span>
+              </div>
               
-              {photos.length < 3 && (
-                <button 
-                  onClick={handleSimulatePhoto}
-                  className="aspect-square flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 text-gray-500 hover:bg-white transition-colors"
-                >
-                  <Camera className="w-6 h-6 mb-1 text-gray-400" />
-                  <span className="text-[10px]">添加照片</span>
-                </button>
-              )}
+              <div className="grid grid-cols-3 gap-2">
+                {photos.map((url, idx) => (
+                  <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-gray-100">
+                    <img src={url} alt={`上传的照片 ${idx + 1}`} className="w-full h-full object-cover" />
+                    <button 
+                      onClick={() => removePhoto(idx)}
+                      className="absolute top-1 right-1 bg-black/50 rounded-full p-1 text-white hover:bg-black/70"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+                
+                {photos.length < 3 && (
+                  <button 
+                    onClick={handleSimulatePhoto}
+                    className="aspect-square flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 text-gray-500 hover:bg-white transition-colors"
+                  >
+                    <Camera className="w-6 h-6 mb-1 text-gray-400" />
+                    <span className="text-[10px]">添加照片</span>
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           {error && <div className="text-red-500 text-sm text-center">{error}</div>}
 

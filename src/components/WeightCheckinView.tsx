@@ -5,7 +5,7 @@ import { Scale } from 'lucide-react';
 import { format } from 'date-fns';
 
 export const WeightCheckinView = () => {
-  const { setCurrentView, addWeightRecord, weightRecords, user } = useApp();
+  const { setCurrentView, goBack, addWeightRecord, weightRecords, user } = useApp();
   const [weight, setWeight] = useState('');
   const [error, setError] = useState('');
 
@@ -36,7 +36,7 @@ export const WeightCheckinView = () => {
 
   return (
     <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-safe">
-      <NavBar title="体重打卡" onBack={() => setCurrentView('dashboard')} />
+      <NavBar title="体重打卡" onBack={goBack} />
       
       <div className="p-6 space-y-6">
         <div className="flex flex-col items-center justify-center space-y-4 py-8">

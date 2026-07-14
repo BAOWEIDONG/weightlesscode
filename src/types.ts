@@ -42,6 +42,8 @@ export interface DietRecord {
   dietitianComment?: string;
   dietitianName?: string;
   dietitianCommentDate?: string;
+  isFasted?: boolean;
+  dietitianScore?: -1 | 0 | 1 | null;
 }
 
 export interface CoachRecord {
@@ -59,4 +61,5 @@ export interface CoachActivityRecord {
   imageUrls: string[];
   coachName: string;
   date: string;
+  videoUrl?: string;
 }

@@ -81,7 +81,7 @@ export const MOCK_MEDICAL_DATA: MedicalCategory[] = [
 ];
 
 export const HealthProfileView = () => {
-  const { setCurrentView, questionnaireAnswered } = useApp();
+  const { setCurrentView, goBack, questionnaireAnswered } = useApp();
   const [qData, setQData] = useState<any>(null);
 
   useEffect(() => {
@@ -108,7 +108,7 @@ export const HealthProfileView = () => {
 
   return (
     <div className="flex h-full flex-col bg-[#F7F8FA] pb-20 overflow-y-auto font-sans">
-      <NavBar title="健康档案" onBack={() => setCurrentView('dashboard')} right={
+      <NavBar title="健康档案" onBack={goBack} right={
         <div className="flex items-center gap-1">
           <button className="text-[#07C160] hover:bg-green-50 p-2 rounded-full transition-colors" onClick={handleUploadReport}>
             <UploadCloud className="h-5 w-5" />

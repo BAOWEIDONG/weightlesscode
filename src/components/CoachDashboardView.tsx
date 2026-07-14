@@ -21,7 +21,7 @@ export const CoachDashboardView = () => {
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900">教练您好，{user?.name || '专家'}</h2>
-              <p className="text-xs font-bold text-[#07C160] uppercase tracking-wider mt-1">28天轻体减重训练营</p>
+              <p className="text-xs font-bold text-[#07C160] uppercase tracking-wider mt-1">28天营养减重训练营</p>
             </div>
           </div>
         </div>

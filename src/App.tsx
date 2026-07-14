@@ -23,6 +23,8 @@ import { DietitianDashboardView } from './components/DietitianDashboardView';
 import { DietitianStudentDetailView } from './components/DietitianStudentDetailView';
 import { DietitianUnannotatedListView } from './components/DietitianUnannotatedListView';
 import { CampStatsView } from './components/CampStatsView';
+import { RankingView } from './components/RankingView';
+import { PointsDetailView } from './components/PointsDetailView';
 
 const AppContent = () => {
   const { currentView } = useApp();
@@ -46,6 +48,8 @@ const AppContent = () => {
     case 'dietitian-student-detail': return <DietitianStudentDetailView />;
     case 'dietitian-unannotated-list': return <DietitianUnannotatedListView />;
     case 'camp-stats': return <CampStatsView />;
+    case 'ranking': return <RankingView />;
+    case 'pointsDetail': return <PointsDetailView />;
     default: return <LoginView />;
   }
 };

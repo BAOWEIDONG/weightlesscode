@@ -6,7 +6,7 @@ import { Activity, Coffee, Scale } from 'lucide-react';
 import { formatDateTime } from '../lib/utils';
 
 export const CalendarView = () => {
-  const { setCurrentView, exerciseRecords, dietRecords, weightRecords, user } = useApp();
+  const { setCurrentView, goBack, exerciseRecords, dietRecords, weightRecords, user } = useApp();
   const today = new Date();
   
   const [selectedDate, setSelectedDate] = useState<Date>(today);
@@ -34,7 +34,7 @@ export const CalendarView = () => {
 
   return (
     <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-8">
-      <NavBar title="打卡记录" onBack={() => setCurrentView('dashboard')} />
+      <NavBar title="打卡记录" onBack={goBack} />
       
       <div className="p-4 space-y-4">
         <Card>

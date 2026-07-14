@@ -4,11 +4,11 @@ import { NavBar, Card, ImageCarousel } from './ui';
 import { Clock, User } from 'lucide-react';
 
 export const ActivitiesListView = () => {
-  const { setCurrentView, coachActivities } = useApp();
+  const { setCurrentView, goBack, coachActivities } = useApp();
 
   return (
     <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-safe font-sans">
-      <NavBar title="锻炼活动" onBack={() => setCurrentView('dashboard')} />
+      <NavBar title="锻炼活动" onBack={goBack} />
       
       <div className="p-4 space-y-5">
         {coachActivities.length === 0 ? (
@@ -22,7 +22,18 @@ export const ActivitiesListView = () => {
                 key={activity.id} 
                 className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-gray-100 group"
               >
-                <ImageCarousel imageUrls={activity.imageUrls} heightClass="h-48" />
+                {activity.videoUrl ? (
+                  <div className="bg-black aspect-video relative">
+                    <video 
+                      src={activity.videoUrl} 
+                      className="w-full h-full object-contain"
+                      controls
+                      poster={activity.imageUrls.length > 0 ? activity.imageUrls[0] : undefined}
+                    />
+                  </div>
+                ) : (
+                  <ImageCarousel imageUrls={activity.imageUrls} heightClass="h-48" />
+                )}
                 
                 <div className="p-4">
                   <h3 className="font-bold text-gray-900 text-lg mb-2">{activity.title}</h3>

@@ -12,7 +12,7 @@ const MEAL_TYPES = [
 ];
 
 export const DietitianUnannotatedListView = () => {
-  const { setCurrentView, setSelectedStudentId, dietRecords } = useApp();
+  const { setCurrentView, goBack, setSelectedStudentId, dietRecords } = useApp();
 
   // Filter records that don't have a dietitian comment
   const unannotatedRecords = dietRecords.filter(r => !r.dietitianComment);
@@ -34,7 +34,7 @@ export const DietitianUnannotatedListView = () => {
 
   return (
     <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-safe">
-      <NavBar title="待批注饮食" onBack={() => setCurrentView('dietitian-dashboard')} />
+      <NavBar title="待批注饮食" onBack={goBack} />
       
       <div className="p-4 space-y-4">
         {Array.from(studentRecords.entries()).map(([studentId, records]) => {

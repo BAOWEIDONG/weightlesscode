@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import React, { useState } from 'react';
 import { useApp } from '../AppContext';
 import { NavBar, Card, Button, Input } from './ui';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Camera } from 'lucide-react';
 import { formatDateTime } from '../lib/utils';
 
 const EXERCISE_TYPES = ['跑步', '游泳', '力量训练', '瑜伽', '快走', '骑行', '其他'];
@@ -16,7 +16,7 @@ type ActivityItem = {
 };
 
 export const ExerciseView = () => {
-  const { setCurrentView, addExerciseRecord, exerciseRecords, user } = useApp();
+  const { setCurrentView, goBack, addExerciseRecord, exerciseRecords, user } = useApp();
   
   const todayStr = format(new Date(), 'yyyy-MM-dd');
   const userExercises = exerciseRecords.filter(r => r.studentId === user?.id || !r.studentId);
@@ -28,6 +28,17 @@ export const ExerciseView = () => {
     { id: Date.now().toString(), type: '跑步', customType: '', duration: '', intensity: 3 }
   ]);
   const [notes, setNotes] = useState('');
+  const [photos, setPhotos] = useState<string[]>([]);
+
+  const handleSimulatePhoto = () => {
+    if (photos.length < 6) {
+      setPhotos(prev => [...prev, `https://source.unsplash.com/random/400x300?workout&sig=${Date.now()}`]);
+    }
+  };
+
+  const removePhoto = (index: number) => {
+    setPhotos(prev => prev.filter((_, i) => i !== index));
+  };
   const [error, setError] = useState('');
 
   const handleAddActivity = () => {
@@ -68,7 +79,8 @@ export const ExerciseView = () => {
         type: a.type === '其他' ? a.customType : a.type,
         duration: parseInt(a.duration),
         intensity: a.intensity,
-        notes: index === 0 ? notes : undefined // Only attach notes to the first record to avoid duplication
+        notes: index === 0 ? notes : undefined,
+        photos: index === 0 ? photos : undefined
       });
     });
     
@@ -77,7 +89,7 @@ export const ExerciseView = () => {
 
   return (
     <div className="flex h-full flex-col bg-[#F7F8FA] overflow-y-auto pb-8 font-sans">
-      <NavBar title="运动打卡" onBack={() => setCurrentView('dashboard')} />
+      <NavBar title="运动打卡" onBack={goBack} />
       
       <div className="p-4 space-y-4">
         {activities.map((activity, index) => (
@@ -169,15 +181,43 @@ export const ExerciseView = () => {
           添加运动项
         </button>
 
-        <Card className="space-y-2 shadow-sm">
-          <label className="text-sm font-bold text-gray-900 block">综合备注 (选填)</label>
-          <textarea
-            className="w-full rounded-lg border border-gray-200 p-3 text-sm focus:outline-none focus:border-[#07C160] bg-gray-50 focus:bg-white transition-colors"
-            rows={3}
-            placeholder="记录一下今天整体的运动感受吧~"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-          />
+        <Card className="space-y-4 shadow-sm">
+          <div>
+            <label className="text-sm font-bold text-gray-900 block mb-2">运动照片 (最多 6 张)</label>
+            <div className="grid grid-cols-3 gap-2">
+              {photos.map((url, idx) => (
+                <div key={idx} className="aspect-square rounded-xl bg-gray-100 overflow-hidden relative">
+                  <img src={url} alt="运动打卡" className="w-full h-full object-cover" />
+                  <button 
+                    onClick={() => removePhoto(idx)}
+                    className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-1"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+              {photos.length < 6 && (
+                <div 
+                  onClick={handleSimulatePhoto}
+                  className="aspect-square rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors"
+                >
+                  <Camera className="h-6 w-6 text-gray-400 mb-1" />
+                  <span className="text-[10px] text-gray-400">添加图片</span>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-gray-900 block">综合备注 (选填)</label>
+            <textarea
+              className="w-full rounded-lg border border-gray-200 p-3 text-sm focus:outline-none focus:border-[#07C160] bg-gray-50 focus:bg-white transition-colors"
+              rows={3}
+              placeholder="记录一下今天整体的运动感受吧~"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            />
+          </div>
         </Card>
 
         {error && <div className="text-red-500 text-sm text-center font-medium bg-red-50 p-2 rounded-lg">{error}</div>}
