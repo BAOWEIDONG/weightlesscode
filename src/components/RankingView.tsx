@@ -1,12 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { useApp, MOCK_STUDENTS } from '../AppContext';
-import { NavBar, Card, Button } from './ui';
+import { NavBar, Card } from './ui';
 import { rankStudents } from '../lib/scoring';
-import { Trophy, Medal, Download } from 'lucide-react';
+import { Trophy, Medal, Download, ChevronRight } from 'lucide-react';
 
 export const RankingView = () => {
   const { setCurrentView, goBack, dietRecords, exerciseRecords, user, setSelectedStudentId } = useApp();
   const [toast, setToast] = useState('');
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
   const rankedStudents = useMemo(() => {
     return rankStudents(MOCK_STUDENTS, dietRecords, exerciseRecords);
@@ -41,6 +42,22 @@ export const RankingView = () => {
     setCurrentView('pointsDetail');
   };
 
+  const handleScrollToMe = () => {
+    if (!user) return;
+    const el = document.getElementById(`rank-row-${user.id}`);
+    if (el) {
+      el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      setHighlightedId(user.id);
+      setTimeout(() => {
+        setHighlightedId(null);
+      }, 1500);
+    }
+  };
+
+  const currentUserRank = useMemo(() => {
+    return rankedStudents.find(s => s.studentId === user?.id);
+  }, [rankedStudents, user]);
+
   return (
     <div className="flex h-full flex-col bg-[#F7F8FA] relative">
       <NavBar 
@@ -57,41 +74,68 @@ export const RankingView = () => {
       <div className="flex-1 overflow-y-auto p-4 space-y-3 pb-8">
         <div className="bg-gradient-to-r from-[#FF976A] to-[#ffb191] rounded-2xl p-6 text-white shadow-lg mb-6 relative overflow-hidden">
           <div className="relative z-10">
-            <h2 className="text-xl font-bold mb-1">训练营积分榜</h2>
-            <p className="text-sm opacity-90">坚持打卡，健康生活每一天！</p>
+            {user?.role === 'dietitian' ? (
+              <>
+                <h2 className="text-xl font-bold mb-1">共 {rankedStudents.length} 名学员参与排名</h2>
+              </>
+            ) : (
+              <>
+                <h2 className="text-lg font-bold mb-1 leading-snug">
+                  当前我的排名位于 <span onClick={handleScrollToMe} className="text-white border-b border-white/60 cursor-pointer pb-0.5">{currentUserRank?.rank || '--'}</span> 位，<br/>
+                  总积分 <span onClick={() => user && handleRowClick(user.id)} className="text-white border-b border-white/60 cursor-pointer pb-0.5">{currentUserRank?.totalScore || 0}</span> 分
+                </h2>
+                <p className="text-xs opacity-90 mt-2">坚持打卡，健康生活每一天！</p>
+              </>
+            )}
           </div>
           <Trophy className="absolute right-4 -bottom-4 w-24 h-24 text-white opacity-20" />
         </div>
 
         {rankedStudents.map((student) => {
           const isCurrentUser = user?.id === student.studentId;
-          const isTop3 = student.rank <= 3;
           const isClickable = user?.role === 'dietitian' || isCurrentUser;
+          const isHighlighted = highlightedId === student.studentId;
           
           return (
             <Card 
               key={student.studentId}
-              className={`p-4 flex items-center transition-transform hover:scale-[1.02] ${isCurrentUser ? 'ring-2 ring-[#07C160] bg-green-50/50' : ''} ${isClickable ? 'cursor-pointer' : 'opacity-80'}`}
-              onClick={() => handleRowClick(student.studentId)}
+              id={`rank-row-${student.studentId}`}
+              className={`p-4 flex items-center transition-all duration-300 ${isCurrentUser ? 'bg-green-50/30' : ''} ${isHighlighted ? 'ring-2 ring-[#FF976A] bg-orange-50/50 scale-[1.02]' : ''}`}
             >
-              <div className="w-12 h-8 mr-2 flex flex-col items-center justify-center font-bold">
-                {student.rank === 1 ? <Medal className="w-6 h-6 text-yellow-500" /> :
-                 student.rank === 2 ? <Medal className="w-6 h-6 text-gray-400" /> :
-                 student.rank === 3 ? <Medal className="w-6 h-6 text-amber-600" /> :
-                 <span className="text-gray-400 text-lg">{student.rank}</span>}
+              <div className="w-10 h-10 mr-4 flex items-center justify-center shrink-0 relative">
+                <span className={`text-3xl font-black italic tracking-tighter ${
+                  student.rank === 1 ? 'text-yellow-500 drop-shadow-sm' : 
+                  student.rank === 2 ? 'text-gray-400 drop-shadow-sm' : 
+                  student.rank === 3 ? 'text-amber-600 drop-shadow-sm' : 
+                  'text-gray-300'
+                }`}>
+                  {student.rank}
+                </span>
+                {student.rank <= 3 && (
+                  <Medal className={`absolute -top-0.5 -right-1 w-4 h-4 fill-current ${
+                    student.rank === 1 ? 'text-yellow-500' : 
+                    student.rank === 2 ? 'text-gray-400' : 
+                    'text-amber-600'
+                  }`} />
+                )}
               </div>
               
-              <div className="flex-1">
-                <div className="font-bold text-gray-900 flex items-center gap-2 mb-0.5">
-                  {student.name}
-                  {isCurrentUser && <span className="text-[10px] bg-[#07C160] text-white px-1.5 py-0.5 rounded">我</span>}
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-gray-900 flex items-center gap-2 truncate">
+                  <span className="truncate">{student.name}</span>
+                  {isCurrentUser && <span className="text-[10px] bg-[#07C160] text-white px-1.5 py-0.5 rounded shrink-0">我</span>}
                 </div>
-                <div className="text-[10px] text-gray-500">总排名第 {student.rank} 位</div>
               </div>
               
-              <div className="text-right">
-                <div className="text-lg font-bold text-[#FF976A]">{student.totalScore}</div>
-                <div className="text-[10px] text-gray-500">总积分</div>
+              <div 
+                className={`flex items-center gap-1 pl-3 py-1 ml-2 ${isClickable ? 'cursor-pointer hover:opacity-80 active:opacity-60 transition-opacity' : 'opacity-80'}`}
+                onClick={() => handleRowClick(student.studentId)}
+              >
+                <div className="text-right flex flex-col items-end justify-center">
+                  <div className="text-[22px] font-black text-[#FF976A] leading-none tracking-tighter">{student.totalScore}</div>
+                  <div className="text-[10px] text-gray-400 mt-1">积分详情</div>
+                </div>
+                <ChevronRight className={`w-4 h-4 ${isClickable ? 'text-gray-300' : 'text-transparent'}`} />
               </div>
             </Card>
           );

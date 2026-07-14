@@ -12,7 +12,7 @@ const MEAL_TYPES = [
 ];
 
 export const DietitianUnannotatedListView = () => {
-  const { setCurrentView, goBack, setSelectedStudentId, dietRecords } = useApp();
+  const { setCurrentView, goBack, setSelectedStudentId, dietRecords, openImagePreview } = useApp();
 
   // Filter records that don't have a dietitian comment
   const unannotatedRecords = dietRecords.filter(r => !r.dietitianComment);
@@ -76,7 +76,7 @@ export const DietitianUnannotatedListView = () => {
                     }}
                   >
                     {record.photos && record.photos.length > 0 ? (
-                      <img src={record.photos[0]} alt="食物" className="w-16 h-16 rounded-lg object-cover shrink-0" />
+                      <img src={record.photos[0]} alt="食物" className="w-16 h-16 rounded-lg object-cover shrink-0 cursor-pointer" onClick={(e) => { e.stopPropagation(); openImagePreview(record.photos || [], 0); }} />
                     ) : (
                       <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
                         <Coffee className="w-6 h-6 text-gray-400" />

@@ -16,7 +16,7 @@ type ActivityItem = {
 };
 
 export const ExerciseView = () => {
-  const { setCurrentView, goBack, addExerciseRecord, exerciseRecords, user } = useApp();
+  const { setCurrentView, goBack, addExerciseRecord, exerciseRecords, user, openImagePreview } = useApp();
   
   const todayStr = format(new Date(), 'yyyy-MM-dd');
   const userExercises = exerciseRecords.filter(r => r.studentId === user?.id || !r.studentId);
@@ -262,7 +262,7 @@ export const ExerciseView = () => {
                     {record.photos && record.photos.length > 0 && (
                       <div className="flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                         {record.photos.map((url, idx) => (
-                          <img key={idx} src={url} alt="运动" className="h-20 w-20 object-cover rounded-lg shrink-0 snap-center border border-gray-100" />
+                          <img key={idx} src={url} alt="运动" className="h-20 w-20 object-cover rounded-lg shrink-0 snap-center border border-gray-100 cursor-pointer" onClick={() => openImagePreview(record.photos || [], idx)} />
                         ))}
                       </div>
                     )}

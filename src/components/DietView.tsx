@@ -13,7 +13,7 @@ const MEAL_TYPES = [
 ];
 
 export const DietView = () => {
-  const { setCurrentView, goBack, addDietRecord, dietRecords, user } = useApp();
+  const { setCurrentView, goBack, addDietRecord, dietRecords, user, openImagePreview } = useApp();
   
   const todayStr = format(new Date(), 'yyyy-MM-dd');
   const userDiets = dietRecords.filter(r => r.studentId === user?.id || !r.studentId);
@@ -230,7 +230,7 @@ export const DietView = () => {
                     
                     <div className="flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                       {record.photos.map((url, idx) => (
-                        <img key={idx} src={url} alt="食物" className="h-20 w-20 object-cover rounded-lg shrink-0 snap-center border border-gray-100" />
+                        <img key={idx} src={url} alt="食物" className="h-20 w-20 object-cover rounded-lg shrink-0 snap-center border border-gray-100 cursor-pointer" onClick={() => openImagePreview(record.photos || [], idx)} />
                       ))}
                     </div>
                   </div>

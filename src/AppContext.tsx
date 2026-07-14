@@ -16,6 +16,10 @@ interface AppState {
   selectedActivityId: string | null;
   selectedDateStr: string | null;
   
+  imagePreview: { urls: string[]; index: number } | null;
+  openImagePreview: (urls: string[], index?: number) => void;
+  closeImagePreview: () => void;
+  
   setUser: (user: User | null) => void;
   setCurrentView: (view: View) => void;
   goBack: () => void;
@@ -298,6 +302,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
   const [selectedDateStr, setSelectedDateStr] = useState<string | null>(null);
 
+  const [imagePreview, setImagePreview] = useState<{ urls: string[]; index: number } | null>(null);
+
+  const openImagePreview = (urls: string[], index: number = 0) => {
+    if (urls.length > 0) {
+      setImagePreview({ urls, index });
+    }
+  };
+
+  const closeImagePreview = () => {
+    setImagePreview(null);
+  };
+
   return (
     <AppContext.Provider value={{
       user, setUser,
@@ -312,7 +328,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       coachActivities, addCoachActivity: (r) => setCoachActivities(prev => [...prev, r]),
       selectedStudentId, setSelectedStudentId,
       selectedActivityId, setSelectedActivityId,
-      selectedDateStr, setSelectedDateStr
+      selectedDateStr, setSelectedDateStr,
+      imagePreview, openImagePreview, closeImagePreview
     }}>
       {children}
     </AppContext.Provider>

@@ -15,7 +15,7 @@ const MEAL_TYPES = [
 ];
 
 export const DietitianStudentDetailView = () => {
-  const { setCurrentView, goBack, selectedStudentId, dietRecords, exerciseRecords, updateDietRecord, user } = useApp();
+  const { setCurrentView, goBack, selectedStudentId, dietRecords, exerciseRecords, updateDietRecord, user, openImagePreview } = useApp();
   const student = MOCK_STUDENTS.find(s => s.id === selectedStudentId);
 
   const [activeTab, setActiveTab] = useState<'diet' | 'exercise' | 'medical' | 'questionnaire'>('diet');
@@ -169,7 +169,7 @@ export const DietitianStudentDetailView = () => {
                     
                     <div className="flex gap-2 overflow-x-auto pb-1">
                       {record.photos?.map((url, idx) => (
-                        <img key={idx} src={url} alt="食物" className="h-20 w-20 object-cover rounded-lg shrink-0 border border-gray-100" />
+                        <img key={idx} src={url} alt="食物" className="h-20 w-20 object-cover rounded-lg shrink-0 border border-gray-100 cursor-pointer" onClick={() => openImagePreview(record.photos || [], idx)} />
                       ))}
                     </div>
                   </div>
@@ -313,7 +313,7 @@ export const DietitianStudentDetailView = () => {
                     {record.photos && record.photos.length > 0 && (
                       <div className="flex gap-2 overflow-x-auto pb-1">
                         {record.photos.map((url, idx) => (
-                          <img key={idx} src={url} alt="运动" className="h-20 w-20 object-cover rounded-lg shrink-0 border border-gray-100" />
+                          <img key={idx} src={url} alt="运动" className="h-20 w-20 object-cover rounded-lg shrink-0 border border-gray-100 cursor-pointer" onClick={() => openImagePreview(record.photos || [], idx)} />
                         ))}
                       </div>
                     )}

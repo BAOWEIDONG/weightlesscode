@@ -25,6 +25,7 @@ import { DietitianUnannotatedListView } from './components/DietitianUnannotatedL
 import { CampStatsView } from './components/CampStatsView';
 import { RankingView } from './components/RankingView';
 import { PointsDetailView } from './components/PointsDetailView';
+import { ImagePreview } from './components/ImagePreview';
 
 const AppContent = () => {
   const { currentView } = useApp();
@@ -59,6 +60,7 @@ export default function App() {
     <AppProvider>
       <div className="w-full h-[100dvh] max-w-md mx-auto overflow-hidden bg-[#F7F8FA] font-sans text-gray-700 sm:shadow-2xl sm:border-x sm:border-gray-100 relative">
         <AppContent />
+        <ImagePreview />
       </div>
     </AppProvider>
   );

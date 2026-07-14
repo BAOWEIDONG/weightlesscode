@@ -6,7 +6,7 @@ import { Activity, Coffee, Scale } from 'lucide-react';
 import { formatDateTime } from '../lib/utils';
 
 export const CalendarView = () => {
-  const { setCurrentView, goBack, exerciseRecords, dietRecords, weightRecords, user } = useApp();
+  const { setCurrentView, goBack, exerciseRecords, dietRecords, weightRecords, user, openImagePreview } = useApp();
   const today = new Date();
   
   const [selectedDate, setSelectedDate] = useState<Date>(today);
@@ -143,7 +143,7 @@ export const CalendarView = () => {
                   {ex.photos && ex.photos.length > 0 && (
                     <div className="flex gap-2 mt-2 overflow-x-auto pb-1 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                       {ex.photos.map((url, idx) => (
-                        <img key={idx} src={url} alt="运动照片" className="h-20 w-20 object-cover rounded-lg shrink-0 snap-center" />
+                        <img key={idx} src={url} alt="运动照片" className="h-20 w-20 object-cover rounded-lg shrink-0 snap-center cursor-pointer" onClick={() => openImagePreview(ex.photos || [], idx)} />
                       ))}
                     </div>
                   )}
@@ -174,7 +174,7 @@ export const CalendarView = () => {
                   {diet.photos && diet.photos.length > 0 && (
                     <div className="flex gap-2 mt-2 overflow-x-auto pb-1 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                       {diet.photos.map((url, idx) => (
-                        <img key={idx} src={url} alt="食物照片" className="h-20 w-20 object-cover rounded-lg shrink-0 snap-center" />
+                        <img key={idx} src={url} alt="食物照片" className="h-20 w-20 object-cover rounded-lg shrink-0 snap-center cursor-pointer" onClick={() => openImagePreview(diet.photos || [], idx)} />
                       ))}
                     </div>
                   )}
