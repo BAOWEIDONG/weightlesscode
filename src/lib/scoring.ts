@@ -69,7 +69,7 @@ export function rankStudents(students: { id: string, name: string }[], dietRecor
 
   for (let i = 0; i < scoreDataList.length; i++) {
     if (i > 0 && scoreDataList[i].totalScore < scoreDataList[i - 1].totalScore) {
-      currentRank = i + 1;
+      currentRank++;
     }
     rankedStudents.push({
       ...scoreDataList[i],

@@ -2,7 +2,26 @@ import React, { useMemo, useState } from 'react';
 import { useApp, MOCK_STUDENTS } from '../AppContext';
 import { NavBar, Card } from './ui';
 import { rankStudents } from '../lib/scoring';
-import { Trophy, Medal, Download, ChevronRight } from 'lucide-react';
+import { Trophy, Download, ChevronRight } from 'lucide-react';
+
+const OlympicMedal = ({ rank, className = '' }: { rank: 1 | 2 | 3; className?: string }) => {
+  const config = {
+    1: { bg: '#FDE047', border: '#EAB308', text: '#A16207' }, // Gold
+    2: { bg: '#E2E8F0', border: '#94A3B8', text: '#475569' }, // Silver
+    3: { bg: '#FDBA74', border: '#F97316', text: '#C2410C' }, // Bronze
+  }[rank];
+
+  if (!config) return null;
+
+  return (
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <path d="M6 0L10.5 9H12V0H6Z" fill="#3B82F6"/>
+      <path d="M12 0V9H13.5L18 0H12Z" fill="#EF4444"/>
+      <circle cx="12" cy="14" r="8" fill={config.bg} stroke={config.border} strokeWidth="1.5" />
+      <circle cx="12" cy="14" r="5" fill="none" stroke={config.border} strokeWidth="0.5" />
+    </svg>
+  );
+};
 
 export const RankingView = () => {
   const { setCurrentView, goBack, dietRecords, exerciseRecords, user, setSelectedStudentId } = useApp();
@@ -102,21 +121,17 @@ export const RankingView = () => {
               id={`rank-row-${student.studentId}`}
               className={`p-4 flex items-center transition-all duration-300 ${isCurrentUser ? 'bg-green-50/30' : ''} ${isHighlighted ? 'ring-2 ring-[#FF976A] bg-orange-50/50 scale-[1.02]' : ''}`}
             >
-              <div className="w-10 h-10 mr-4 flex items-center justify-center shrink-0 relative">
-                <span className={`text-3xl font-black italic tracking-tighter ${
-                  student.rank === 1 ? 'text-yellow-500 drop-shadow-sm' : 
-                  student.rank === 2 ? 'text-gray-400 drop-shadow-sm' : 
-                  student.rank === 3 ? 'text-amber-600 drop-shadow-sm' : 
+              <div className="w-12 mr-3 flex items-center justify-center shrink-0 relative">
+                <span className={`text-4xl font-black italic tracking-tighter ${
+                  student.rank === 1 ? 'text-yellow-500 drop-shadow-md' : 
+                  student.rank === 2 ? 'text-gray-400 drop-shadow-md' : 
+                  student.rank === 3 ? 'text-amber-600 drop-shadow-md' : 
                   'text-gray-300'
                 }`}>
                   {student.rank}
                 </span>
                 {student.rank <= 3 && (
-                  <Medal className={`absolute -top-0.5 -right-1 w-4 h-4 fill-current ${
-                    student.rank === 1 ? 'text-yellow-500' : 
-                    student.rank === 2 ? 'text-gray-400' : 
-                    'text-amber-600'
-                  }`} />
+                  <OlympicMedal rank={student.rank as 1 | 2 | 3} className="absolute -top-3 -right-3 w-8 h-8 drop-shadow-sm" />
                 )}
               </div>
               

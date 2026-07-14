@@ -40,7 +40,14 @@ const AppContext = createContext<AppState | undefined>(undefined);
 export const MOCK_STUDENTS = [
   { id: 's1', name: '李明', age: 32, gender: 'male', phone: '13800000001' },
   { id: 's2', name: '王丽', age: 28, gender: 'female', phone: '13800000002' },
-  { id: 's3', name: '张伟', age: 45, gender: 'male', phone: '13800000003' }
+  { id: 's3', name: '张伟', age: 45, gender: 'male', phone: '13800000003' },
+  { id: 's4', name: '赵静', age: 26, gender: 'female', phone: '13800000004' },
+  { id: 's5', name: '周杰', age: 31, gender: 'male', phone: '13800000005' },
+  { id: 's6', name: '吴磊', age: 29, gender: 'male', phone: '13800000006' },
+  { id: 's7', name: '郑爽', age: 24, gender: 'female', phone: '13800000007' },
+  { id: 's8', name: '王强', age: 35, gender: 'male', phone: '13800000008' },
+  { id: 's9', name: '刘梅', age: 33, gender: 'female', phone: '13800000009' },
+  { id: 's10', name: '孙悟空', age: 30, gender: 'male', phone: '13800000010' }
 ];
 
 export const MOCK_DIET_RECORDS: DietRecord[] = [
